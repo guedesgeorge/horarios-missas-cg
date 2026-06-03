@@ -1,0 +1,2115 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#1a2a6c" />
+  <meta name="description" content="Localizador de horários de missa em Campo Grande – MS." />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Missas CG" />
+  <title>Missas CG — Horários de Missa em Campo Grande · MS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Poppins:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:      #1a2a6c;
+      --navy-dark: #101b4a;
+      --navy-mid:  #1e3080;
+      --navy-lt:   #2a4099;
+      --gold:      #b79455;
+      --gold-lt:   #d4b278;
+      --gold-faint:#faf4e8;
+      --ivory:     #fdfcf9;
+      --ivory-dim: #f0ece0;
+      --text:      #1e1c18;
+      --muted:     #6b6560;
+      --soft:      #9b948e;
+      --open:      #1f7a4e;
+      --open-bg:   #e6f4ee;
+      --open-bd:   #a3d4bc;
+      --closed:    #8b2e2e;
+      --closed-bg: #fceaea;
+      --warn:      #7a5a1f;
+      --warn-bg:   #fdf6e3;
+      --sh:        0 4px 24px rgba(26,42,108,.10);
+      --sh-lg:     0 12px 48px rgba(26,42,108,.17);
+      --r:         12px;
+      --r-sm:      8px;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --navy:      #2a3d8f;
+        --navy-dark: #0d1530;
+        --navy-mid:  #1a2a6c;
+        --navy-lt:   #2a3d8f;
+        --gold:      #c9a96e;
+        --gold-lt:   #dfc18a;
+        --gold-faint:#1e1a10;
+        --ivory:     #12111a;
+        --ivory-dim: #1c1b28;
+        --text:      #ede9e0;
+        --muted:     #9b9490;
+        --soft:      #6b6560;
+        --open:      #4ade80;
+        --open-bg:   #0d2e1e;
+        --open-bd:   #1f5e3a;
+        --closed:    #f87171;
+        --closed-bg: #2e0d0d;
+        --warn:      #f0c060;
+        --warn-bg:   #2a1e08;
+        --sh:        0 4px 24px rgba(0,0,0,.4);
+        --sh-lg:     0 12px 48px rgba(0,0,0,.5);
+      }
+    }
+
+    html { scroll-behavior: smooth; -webkit-tap-highlight-color: transparent; }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: var(--ivory); color: var(--text);
+      min-height: 100vh; overflow-x: hidden;
+      transition: background .3s, color .3s;
+    }
+
+    @keyframes fadeUp  { from{opacity:0;transform:translateY(22px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes shimmer { 0%{background-position:-200% center} 100%{background-position:200% center} }
+    @keyframes pulse   { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.6);opacity:.5} }
+    @keyframes bounce  { 0%,100%{transform:translateY(0);opacity:.35} 50%{transform:translateY(5px);opacity:.75} }
+    @keyframes cardIn  { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes modalIn { from{opacity:0;transform:translateY(30px) scale(.97)} to{opacity:1;transform:translateY(0) scale(1)} }
+    @keyframes spin    { to{transform:rotate(360deg)} }
+
+    .fu { animation: fadeUp .7s ease both; }
+    .d1 { animation-delay:.08s } .d2 { animation-delay:.18s }
+    .d3 { animation-delay:.28s } .d4 { animation-delay:.38s }
+
+    /* NAV */
+    nav {
+      position:fixed; top:0; left:0; right:0; z-index:200;
+      display:flex; align-items:center; justify-content:space-between;
+      padding:.85rem 1.4rem;
+      transition: background .3s, box-shadow .3s;
+    }
+    nav.scrolled {
+      background:rgba(13,21,48,.93);
+      backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+      box-shadow:0 2px 20px rgba(0,0,0,.4);
+    }
+    .nav-logo {
+      font-family:'Cinzel',serif; font-size:.9rem; font-weight:700;
+      color:var(--gold); letter-spacing:.05em;
+      display:flex; align-items:center; gap:.4rem;
+    }
+    .nav-right { display:flex; align-items:center; gap:.65rem; }
+    .nav-time  { font-size:.69rem; color:rgba(253,252,249,.52); font-weight:300; }
+    .nav-btn {
+      display:flex; align-items:center; justify-content:center;
+      width:32px; height:32px; border-radius:50%;
+      background:rgba(183,148,85,.14); border:1px solid rgba(183,148,85,.28);
+      color:var(--gold-lt); cursor:pointer; transition:background .2s, transform .15s;
+    }
+    .nav-btn:hover { background:rgba(183,148,85,.28); transform:scale(1.08); }
+
+    /* HERO */
+    .hero {
+      position:relative; min-height:100vh;
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      text-align:center; padding:6rem 1.5rem 5rem; overflow:hidden;
+    }
+    .hero-bg {
+      position:absolute; inset:0; z-index:0;
+      background:radial-gradient(ellipse 90% 70% at 50% 18%,#1e3080 0%,#0d1530 55%,#05091e 100%);
+    }
+    .hero-stars {
+      position:absolute; inset:0; z-index:1; pointer-events:none; overflow:hidden;
+    }
+    .hero-stars::before,.hero-stars::after {
+      content:''; position:absolute; width:1px; height:1px; border-radius:50%; background:#fff;
+      box-shadow:120px 80px 0 rgba(255,255,255,.22),240px 160px 0 rgba(255,255,255,.16),
+        60px 220px 0 rgba(255,255,255,.20),340px 60px 0 rgba(255,255,255,.14),
+        480px 180px 0 rgba(255,255,255,.18),580px 90px 0 rgba(255,255,255,.11),
+        700px 250px 0 rgba(255,255,255,.16),30px 350px 0 rgba(255,255,255,.12),
+        200px 400px 0 rgba(255,255,255,.10),640px 380px 0 rgba(255,255,255,.09);
+      opacity:.65;
+    }
+    .hero-stars::after {
+      box-shadow:170px 130px 0 rgba(255,255,255,.13),310px 230px 0 rgba(255,255,255,.09),
+        450px 100px 0 rgba(255,255,255,.18),550px 280px 0 rgba(255,255,255,.11),
+        90px 290px 0 rgba(255,255,255,.16),380px 410px 0 rgba(255,255,255,.09);
+    }
+    .hero-cross {
+      position:absolute; top:50%; left:50%;
+      transform:translate(-50%,-58%); z-index:1; pointer-events:none;
+      width:62vw; max-width:280px; height:82vw; max-height:400px;
+      background:
+        linear-gradient(rgba(183,148,85,.09),rgba(183,148,85,.09)) 50% 0/5px 100% no-repeat,
+        linear-gradient(rgba(183,148,85,.09),rgba(183,148,85,.09)) 0 28%/100% 5px no-repeat;
+    }
+    .hero-grain {
+      position:absolute; inset:0; z-index:2; pointer-events:none;
+      background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.03'/%3E%3C/svg%3E");
+      background-size:180px; opacity:.55;
+    }
+    .hero-arc {
+      position:absolute; bottom:-1px; left:0; right:0; z-index:3;
+      height:56px; background:var(--ivory);
+      clip-path:ellipse(55% 100% at 50% 100%); transition:background .3s;
+    }
+    .hero-content { position:relative; z-index:4; max-width:640px; }
+    .hero-eyebrow {
+      display:inline-flex; align-items:center; gap:.55rem;
+      border:1px solid rgba(183,148,85,.38); color:var(--gold-lt);
+      font-family:'Cinzel',serif; font-size:.6rem; letter-spacing:.24em; text-transform:uppercase;
+      padding:.34rem 1rem; border-radius:2px; margin-bottom:1.8rem;
+    }
+    .hero h1 {
+      font-family:'Cinzel',serif; font-weight:900;
+      font-size:clamp(2.8rem,10vw,5rem);
+      color:#fff; line-height:1.1; margin-bottom:.4rem;
+    }
+    .gold-text {
+      background:linear-gradient(90deg,#b79455 0%,#e8c97a 45%,#b79455 100%);
+      background-size:200% auto;
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+      background-clip:text; animation:shimmer 4s linear infinite;
+    }
+    .hero-tag {
+      font-family:'Cinzel',serif; font-size:1.05rem;
+      font-weight:400; font-style:italic;
+      color:rgba(253,252,249,.62); letter-spacing:.07em; margin-bottom:2.4rem;
+    }
+    .hero-pill {
+      display:inline-flex; align-items:center; gap:.6rem;
+      background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.1);
+      backdrop-filter:blur(10px); padding:.52rem 1.3rem; border-radius:50px;
+      color:rgba(253,252,249,.88); font-size:.81rem;
+    }
+    .live-dot { width:8px; height:8px; border-radius:50%; background:#4ade80; animation:pulse 1.8s ease-in-out infinite; }
+    .scroll-hint {
+      position:absolute; bottom:4rem; left:0; right:0; margin:0 auto; z-index:4;
+      display:flex; flex-direction:column; align-items:center; justify-content:center; gap:.3rem;
+      color:rgba(253,252,249,.32); font-size:.6rem; letter-spacing:.14em; text-transform:uppercase;
+      animation:bounce 2.2s ease-in-out infinite; cursor:pointer; border:none; background:none;
+      width:100%; text-align:center;
+    }
+
+    /* INSTALL BANNER */
+    .install-banner {
+      display:none; align-items:center; justify-content:space-between; gap:.8rem;
+      background:var(--navy-dark); color:rgba(253,252,249,.88);
+      padding:.7rem 1.2rem; font-size:.76rem;
+      position:sticky; top:0; z-index:150;
+    }
+    .install-banner.show { display:flex; }
+    .install-banner strong { color:var(--gold); font-family:'Cinzel',serif; }
+    .btn-inst { flex-shrink:0; padding:.32rem .88rem; background:var(--gold); color:var(--navy-dark); border:none; border-radius:4px; font-family:'Poppins',sans-serif; font-size:.73rem; font-weight:600; cursor:pointer; }
+    .btn-dism { background:none; border:none; color:rgba(253,252,249,.38); cursor:pointer; font-size:1.1rem; padding:0 .2rem; }
+
+    /* MAIN */
+    main { max-width:800px; margin:0 auto; padding:0 1rem 5rem; }
+
+    .sec-head { text-align:center; padding:3rem 0 1.7rem; }
+    .sec-head h2 { font-family:'Cinzel',serif; font-size:1.5rem; font-weight:700; color:var(--navy); margin-bottom:.4rem; }
+    @media (prefers-color-scheme:dark) { .sec-head h2 { color:var(--gold-lt); } }
+    .sec-head p { color:var(--muted); font-size:.82rem; font-weight:300; }
+    .sec-rule   { width:44px; height:2px; background:var(--gold); margin:.75rem auto 0; border-radius:1px; }
+
+    /* STATUS BAR */
+    .status-bar {
+      display:flex; align-items:center; gap:.5rem;
+      padding:.6rem 1rem; border-radius:var(--r-sm); margin-bottom:1.3rem;
+      font-size:.77rem; font-weight:500;
+      background:var(--ivory-dim); border:1px solid rgba(26,42,108,.07); color:var(--muted);
+      transition:all .3s;
+    }
+    .status-bar.has-open { background:var(--open-bg); color:var(--open); border-color:var(--open-bd); }
+
+    /* SEARCH */
+    .search-wrap { position:relative; margin-bottom:.9rem; }
+    .search-ico  { position:absolute; left:.85rem; top:50%; transform:translateY(-50%); color:var(--soft); pointer-events:none; }
+    .search-input {
+      width:100%; padding:.68rem 1rem .68rem 2.4rem;
+      border-radius:var(--r-sm); border:1.5px solid var(--ivory-dim);
+      background:var(--ivory); color:var(--text);
+      font-family:'Poppins',sans-serif; font-size:.83rem; outline:none;
+      transition:border-color .2s, box-shadow .2s;
+    }
+    .search-input:focus { border-color:var(--gold); box-shadow:0 0 0 3px rgba(183,148,85,.11); }
+    .search-input::placeholder { color:var(--soft); }
+    @media (prefers-color-scheme:dark) { .search-input { background:var(--ivory-dim); border-color:rgba(255,255,255,.07); } }
+
+    /* FILTERS */
+    .filters { display:flex; gap:.42rem; flex-wrap:wrap; margin-bottom:1.5rem; }
+    .fbtn {
+      padding:.36rem .9rem; border-radius:50px;
+      border:1.5px solid rgba(183,148,85,.45); background:transparent;
+      color:var(--gold); font-family:'Poppins',sans-serif;
+      font-size:.73rem; font-weight:500; cursor:pointer; transition:all .2s;
+    }
+    .fbtn:hover,.fbtn.active { background:var(--gold); color:var(--navy-dark); border-color:var(--gold); }
+
+    /* CARDS */
+    .grid { display:grid; gap:1.1rem; }
+    .card {
+      background:var(--ivory); border-radius:var(--r);
+      box-shadow:var(--sh); border:1.5px solid var(--ivory-dim);
+      overflow:hidden; opacity:0;
+      transition:border-color .3s, box-shadow .25s, transform .2s, background .3s;
+    }
+    .card.reveal { animation:cardIn .5s ease forwards; }
+    .card:hover  { transform:translateY(-3px); box-shadow:var(--sh-lg); }
+    .card.is-open { border-color:var(--open-bd); }
+    @media (prefers-color-scheme:dark) {
+      .card { background:var(--ivory-dim); border-color:rgba(255,255,255,.07); }
+      .card.is-open { border-color:var(--open-bd); }
+    }
+    .card-bar { height:3px; background:var(--ivory-dim); transition:background .3s; }
+    .card.is-open .card-bar { background:var(--open); }
+
+    .card-head {
+      display:flex; align-items:flex-start; justify-content:space-between; gap:1rem;
+      padding:1.1rem 1.2rem .6rem;
+    }
+    .card-name {
+      font-family:'Cinzel',serif; font-size:.94rem; font-weight:600;
+      color:var(--navy); line-height:1.35; margin-bottom:.2rem;
+    }
+    @media (prefers-color-scheme:dark) { .card-name { color:var(--gold-lt); } }
+    .card-addr { font-size:.71rem; color:var(--muted); font-weight:300; }
+
+    .badge { flex-shrink:0; padding:.27rem .68rem; border-radius:50px; font-size:.63rem; font-weight:700; letter-spacing:.05em; text-transform:uppercase; white-space:nowrap; }
+    .b-open   { background:var(--open-bg);   color:var(--open); }
+    .b-closed { background:var(--closed-bg); color:var(--closed); }
+
+    .card-div  { height:1px; background:var(--ivory-dim); margin:0 1.2rem; }
+    @media (prefers-color-scheme:dark) { .card-div { background:rgba(255,255,255,.06); } }
+
+    .card-body { padding:.85rem 1.2rem 1.2rem; }
+
+    .next-box {
+      display:flex; align-items:center; gap:.5rem;
+      padding:.47rem .75rem; background:var(--warn-bg);
+      border:1px solid rgba(122,90,31,.14); border-radius:var(--r-sm);
+      margin-bottom:.85rem; font-size:.74rem; color:var(--warn);
+    }
+
+    .sched-label { font-size:.63rem; font-weight:600; letter-spacing:.11em; text-transform:uppercase; color:var(--gold); margin-bottom:.55rem; }
+    .sched-list  { display:flex; flex-direction:column; gap:.3rem; margin-bottom:.85rem; }
+    .sched-row {
+      display:flex; align-items:center; gap:.55rem;
+      font-size:.77rem; padding:.22rem 0;
+      border-bottom:1px solid rgba(0,0,0,.04);
+    }
+    .sched-row:last-child { border-bottom:none; }
+    @media (prefers-color-scheme:dark) { .sched-row { border-bottom-color:rgba(255,255,255,.04); } }
+    .sdot { width:6px; height:6px; border-radius:50%; background:var(--gold); flex-shrink:0; }
+    .sday { min-width:88px; font-weight:500; color:var(--text); font-size:.76rem; }
+    .stim { color:var(--muted); font-weight:300; }
+    .scheck { font-size:.85rem; margin-left:auto; color:var(--open); font-weight:700; display:none; }
+    .sched-row.is-hoje .scheck { display:inline; }
+    .sched-row.is-hoje .sdot { background:var(--open); }
+    .sched-row.is-hoje .sday { color:var(--open); font-weight:600; }
+    .sched-row.is-hoje .stim { color:var(--open); font-weight:600; }
+    .sched-row.is-now  .scheck { display:inline; }
+    .sched-row.is-now  .sdot { background:var(--open); animation:pulse 1.8s ease-in-out infinite; }
+    .sched-row.is-now  .sday { color:var(--open); font-weight:700; }
+    .sched-row.is-now  .stim { color:var(--open); font-weight:700; }
+
+    .card-note {
+      font-size:.71rem; color:var(--muted); font-style:italic;
+      padding:.42rem .68rem; background:var(--gold-faint);
+      border-left:3px solid var(--gold); border-radius:0 4px 4px 0;
+      margin-bottom:.85rem; line-height:1.55;
+    }
+
+    /* CARD ACTIONS */
+    .card-acts { display:flex; align-items:center; gap:.5rem; flex-wrap:wrap; }
+    .btn-map {
+      display:inline-flex; align-items:center; gap:.42rem;
+      padding:.5rem 1rem; background:var(--navy); color:var(--ivory);
+      font-family:'Poppins',sans-serif; font-size:.74rem; font-weight:500;
+      border-radius:6px; text-decoration:none; transition:background .2s, transform .15s; border:none; cursor:pointer;
+    }
+    .btn-map:hover { background:var(--navy-lt); transform:translateY(-1px); }
+    @media (prefers-color-scheme:dark) { .btn-map { background:var(--navy-mid); } }
+
+    .btn-whats {
+      display:inline-flex; align-items:center; gap:.42rem;
+      padding:.5rem 1rem; background:#25d366; color:#fff;
+      font-family:'Poppins',sans-serif; font-size:.74rem; font-weight:500;
+      border-radius:6px; text-decoration:none; transition:background .2s, transform .15s;
+    }
+    .btn-whats:hover { background:#1ebe5d; transform:translateY(-1px); }
+
+    .btn-tel {
+      display:inline-flex; align-items:center; gap:.42rem;
+      padding:.5rem 1rem; background:transparent; color:var(--gold);
+      border:1.5px solid rgba(183,148,85,.38);
+      font-family:'Poppins',sans-serif; font-size:.74rem; font-weight:500;
+      border-radius:6px; text-decoration:none; transition:background .2s, border-color .2s;
+    }
+    .btn-tel:hover { background:var(--gold-faint); border-color:var(--gold); }
+
+    .btn-wpp-dot {
+      display:inline-flex; align-items:center; gap:.42rem;
+      padding:.5rem 1rem;
+      background:#25d366; color:#fff;
+      border-radius:6px; text-decoration:none;
+      font-family:'Poppins',sans-serif; font-size:.74rem; font-weight:500;
+      transition:background .2s, transform .15s; flex-shrink:0;
+    }
+    .btn-wpp-dot:hover { background:#1ebe5d; transform:translateY(-1px); }
+    .btn-report {
+      display:inline-flex; align-items:center; gap:.38rem;
+      padding:.42rem .8rem; background:transparent; color:var(--soft);
+      border:1px solid rgba(155,148,142,.25);
+      font-family:'Poppins',sans-serif; font-size:.7rem; font-weight:400;
+      border-radius:6px; cursor:pointer; transition:all .2s; margin-left:auto;
+    }
+    .btn-report:hover { color:var(--closed); border-color:rgba(139,46,46,.3); background:var(--closed-bg); }
+
+    /* EMPTY */
+    .empty { text-align:center; padding:3.5rem 1rem; color:var(--muted); font-size:.85rem; line-height:1.9; }
+    .empty span { display:block; font-size:2.4rem; margin-bottom:.7rem; }
+
+    /* SUGGEST */
+    .suggest-section {
+      margin-top:2.5rem; padding:2rem 1.4rem;
+      background:var(--ivory); border:1.5px solid var(--ivory-dim);
+      border-radius:var(--r); box-shadow:var(--sh);
+    }
+    @media (prefers-color-scheme:dark) { .suggest-section { background:var(--ivory-dim); border-color:rgba(255,255,255,.07); } }
+    .suggest-header { display:flex; align-items:center; gap:.75rem; margin-bottom:1.4rem; }
+    .suggest-icon {
+      width:42px; height:42px; border-radius:50%;
+      background:linear-gradient(135deg,var(--navy),var(--navy-mid));
+      display:flex; align-items:center; justify-content:center;
+      color:var(--gold); flex-shrink:0; font-size:1rem;
+    }
+    .suggest-title { font-family:'Cinzel',serif; font-size:1rem; font-weight:700; color:var(--navy); margin-bottom:.18rem; }
+    @media (prefers-color-scheme:dark) { .suggest-title { color:var(--gold-lt); } }
+    .suggest-sub { font-size:.75rem; color:var(--muted); font-weight:300; }
+
+    /* FORM */
+    .form-grid { display:grid; gap:.85rem; }
+    @media (min-width:560px) { .form-grid { grid-template-columns:1fr 1fr; } }
+    .form-group { display:flex; flex-direction:column; gap:.3rem; }
+    .form-group.full { grid-column:1/-1; }
+    .form-label { font-size:.71rem; font-weight:600; color:var(--navy); letter-spacing:.04em; }
+    @media (prefers-color-scheme:dark) { .form-label { color:var(--gold-lt); } }
+    .form-label span { color:var(--gold); }
+    .form-input,.form-select,.form-textarea {
+      padding:.62rem .85rem; border:1.5px solid var(--ivory-dim);
+      border-radius:var(--r-sm); background:var(--ivory); color:var(--text);
+      font-family:'Poppins',sans-serif; font-size:.82rem; outline:none;
+      transition:border-color .2s, box-shadow .2s; width:100%;
+    }
+    .form-input:focus,.form-select:focus,.form-textarea:focus { border-color:var(--gold); box-shadow:0 0 0 3px rgba(183,148,85,.11); }
+    .form-input::placeholder,.form-textarea::placeholder { color:var(--soft); }
+    .form-textarea { resize:vertical; min-height:90px; line-height:1.6; }
+    @media (prefers-color-scheme:dark) {
+      .form-input,.form-select,.form-textarea { background:rgba(255,255,255,.05); border-color:rgba(255,255,255,.08); }
+    }
+    .form-hint { font-size:.68rem; color:var(--soft); margin-top:.15rem; }
+    .btn-submit {
+      display:inline-flex; align-items:center; justify-content:center; gap:.5rem;
+      padding:.7rem 1.6rem; background:var(--navy); color:var(--ivory);
+      font-family:'Poppins',sans-serif; font-size:.82rem; font-weight:600;
+      border:none; border-radius:var(--r-sm); cursor:pointer;
+      transition:background .2s, transform .15s; margin-top:.3rem;
+    }
+    .btn-submit:hover { background:var(--navy-lt); transform:translateY(-1px); }
+    .btn-submit:disabled { opacity:.6; cursor:not-allowed; transform:none; }
+    .spinner { width:14px; height:14px; border:2px solid rgba(255,255,255,.3); border-top-color:#fff; border-radius:50%; animation:spin .7s linear infinite; }
+    .form-success { display:none; text-align:center; padding:1.5rem; background:var(--open-bg); border:1px solid var(--open-bd); border-radius:var(--r-sm); color:var(--open); font-size:.84rem; line-height:1.7; }
+    .form-success.show { display:block; }
+    .form-success strong { font-family:'Cinzel',serif; font-size:.95rem; display:block; margin-bottom:.3rem; }
+
+    /* MODAL */
+    .modal-overlay {
+      position:fixed; inset:0; z-index:500;
+      background:rgba(10,16,40,.72);
+      backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);
+      display:flex; align-items:flex-end; justify-content:center; padding:1rem;
+      opacity:0; pointer-events:none; transition:opacity .25s;
+    }
+    @media (min-width:560px) { .modal-overlay { align-items:center; } }
+    .modal-overlay.open { opacity:1; pointer-events:all; }
+    .modal {
+      background:var(--ivory); border-radius:var(--r) var(--r) 0 0;
+      width:100%; max-width:500px; max-height:90svh; overflow-y:auto;
+      padding:1.5rem 1.4rem 2rem; animation:modalIn .3s ease both;
+    }
+    @media (min-width:560px) { .modal { border-radius:var(--r); } }
+    @media (prefers-color-scheme:dark) { .modal { background:var(--ivory-dim); } }
+    .modal-handle { width:36px; height:4px; border-radius:2px; background:var(--ivory-dim); margin:0 auto .9rem; }
+    @media (min-width:560px) { .modal-handle { display:none; } }
+    .modal-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:1.2rem; }
+    .modal-title { font-family:'Cinzel',serif; font-size:.98rem; font-weight:700; color:var(--navy); }
+    @media (prefers-color-scheme:dark) { .modal-title { color:var(--gold-lt); } }
+    .modal-close { width:30px; height:30px; border-radius:50%; background:var(--ivory-dim); border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; color:var(--muted); font-size:1rem; transition:background .2s; }
+    .modal-close:hover { background:var(--closed-bg); color:var(--closed); }
+    .modal-sub { font-size:.78rem; color:var(--muted); margin-bottom:1.2rem; line-height:1.6; }
+
+    /* FOOTER */
+    footer {
+      text-align:center; padding:2.2rem 1rem;
+      border-top:1px solid var(--ivory-dim);
+      color:var(--soft); font-size:.71rem; line-height:1.85;
+    }
+    footer strong { font-family:'Cinzel',serif; color:var(--gold); font-weight:600; }
+
+    /* TOAST */
+    .toast {
+      position:fixed; bottom:1.4rem; left:50%;
+      transform:translateX(-50%) translateY(80px);
+      background:var(--navy-dark); color:rgba(253,252,249,.95);
+      padding:.6rem 1.35rem; border-radius:50px;
+      font-size:.77rem; font-weight:500; box-shadow:var(--sh-lg);
+      z-index:999; transition:transform .3s cubic-bezier(.34,1.56,.64,1), opacity .3s;
+      opacity:0; pointer-events:none;
+    }
+    .toast.show { transform:translateX(-50%) translateY(0); opacity:1; }
+
+    /* NOTICE */
+    .notice-overlay {
+      position:fixed; inset:0; z-index:400;
+      background:rgba(10,16,40,.75); backdrop-filter:blur(6px);
+      display:flex; align-items:center; justify-content:center; padding:1.5rem;
+      animation: fadeIn .4s ease;
+    }
+    @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+    .notice-box { background:var(--ivory); border-radius:var(--r); box-shadow:var(--sh-lg); max-width:360px; width:100%; overflow:hidden; }
+    @media(prefers-color-scheme:dark){ .notice-box{background:var(--ivory-dim);} }
+    .notice-top { background:var(--navy); padding:1.2rem 1.4rem; display:flex; align-items:center; gap:.75rem; }
+    .notice-icon { width:38px; height:38px; border-radius:50%; flex-shrink:0; background:rgba(183,148,85,.2); border:1px solid rgba(183,148,85,.4); display:flex; align-items:center; justify-content:center; font-size:1.1rem; }
+    .notice-title { font-family:'Cinzel',serif; font-size:.9rem; font-weight:700; color:var(--gold); }
+    .notice-sub   { font-size:.7rem; color:rgba(253,252,249,.55); margin-top:.1rem; }
+    .notice-body  { padding:1.2rem 1.4rem; }
+    .notice-text  { font-size:.83rem; color:var(--text); line-height:1.75; margin-bottom:1.1rem; }
+    .notice-text strong { color:var(--navy); }
+    @media(prefers-color-scheme:dark){ .notice-text strong { color:var(--gold-lt); } }
+    .notice-btn { width:100%; padding:.65rem; background:var(--navy); color:var(--ivory); border:none; border-radius:var(--r-sm); font-family:'Poppins',sans-serif; font-size:.82rem; font-weight:600; cursor:pointer; transition:background .2s; }
+    .notice-btn:hover { background:var(--navy-lt); }
+
+    @media (min-width:560px) {
+      .card-head { padding:1.2rem 1.4rem .65rem; }
+      .card-body { padding:.9rem 1.4rem 1.35rem; }
+      .card-div  { margin:0 1.4rem; }
+      .card-name { font-size:1rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="nav">
+  <div class="nav-logo">✦ Missas CG</div>
+  <div class="nav-right">
+    <span class="nav-time" id="nav-time"></span>
+    <button class="nav-btn" id="btn-share" aria-label="Compartilhar">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+    </button>
+  </div>
+</nav>
+
+<!-- INSTALL BANNER -->
+<div class="install-banner" id="install-banner">
+  <span>📲 Instale o <strong>Missas CG</strong> na sua tela inicial</span>
+  <div style="display:flex;gap:.5rem;align-items:center">
+    <button class="btn-inst" id="btn-inst">Instalar</button>
+    <button class="btn-dism" id="btn-dism">✕</button>
+  </div>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-stars"></div>
+  <div class="hero-cross"></div>
+  <div class="hero-grain"></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow fu d1">⛪&ensp;Campo Grande · Mato Grosso do Sul</div>
+    <h1 class="fu d2">Missas<br /><span class="gold-text">CG</span></h1>
+    <p class="hero-tag fu d3">"Fazei isso em memória de mim."</p>
+    <div class="hero-pill fu d4">
+      <span class="live-dot"></span>
+      <span id="hero-clock">Carregando…</span>
+    </div>
+  </div>
+  <button class="scroll-hint" onclick="document.getElementById('content').scrollIntoView(true)">
+    <svg width="16" height="9" viewBox="0 0 16 9" fill="none"><path d="M1 1l7 7 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <span>ver horários</span>
+  </button>
+  <div class="hero-arc"></div>
+</section>
+
+<!-- MAIN -->
+<main id="content">
+  <div class="sec-head fu">
+    <h2>Horários de Missa</h2>
+    <p>Paróquias em Campo Grande · MS — atualizado em tempo real</p>
+    <div class="sec-rule"></div>
+  </div>
+
+  <div class="status-bar" id="status-bar">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+    <span id="status-txt">Verificando…</span>
+  </div>
+
+  <div class="search-wrap">
+    <svg class="search-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input class="search-input" type="search" id="search" placeholder="Buscar paróquia ou bairro…" oninput="onSearch()" />
+  </div>
+
+  <div class="filters">
+    <button class="fbtn active" onclick="setFilter('all',this)">Todas</button>
+    <button class="fbtn" onclick="setFilter('proximas',this)">Próximas Missas</button>
+    <button class="fbtn" onclick="setFilter('aberta',this)">Com Missa Hoje</button>
+    <button class="fbtn" onclick="setFilter('centro',this)">Centro</button>
+    <button class="fbtn" onclick="setFilter('norte',this)">Norte</button>
+    <button class="fbtn" onclick="setFilter('sul',this)">Sul</button>
+    <button class="fbtn" onclick="setFilter('leste',this)">Leste</button>
+    <button class="fbtn" onclick="setFilter('oeste',this)">Oeste</button>
+    
+    <button class="fbtn" onclick="setFilter('interior',this)">Interior</button>
+  </div>
+
+  <div class="grid" id="grid"></div>
+
+  <!-- FORMULÁRIO SUGESTÃO -->
+  <div class="suggest-section fu" style="margin-top:2.5rem">
+    <div class="suggest-header">
+      <div class="suggest-icon">✝</div>
+      <div>
+        <div class="suggest-title">Conhece outra paróquia?</div>
+        <div class="suggest-sub">Ajude a comunidade — envie os horários e adicionamos no app.</div>
+      </div>
+    </div>
+    <div id="suggest-form-wrap">
+      <div class="form-grid" id="suggest-form">
+        <div class="form-group">
+          <label class="form-label" for="s-name">Nome da paróquia <span>*</span></label>
+          <input class="form-input" id="s-name" type="text" placeholder="Ex: Paróquia São Pedro" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="s-bairro">Bairro</label>
+          <input class="form-input" id="s-bairro" type="text" placeholder="Ex: Jardim América" />
+        </div>
+        <div class="form-group full">
+          <label class="form-label" for="s-addr">Endereço</label>
+          <input class="form-input" id="s-addr" type="text" placeholder="Rua, número — Bairro" />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="s-whats">WhatsApp da paróquia</label>
+          <input class="form-input" id="s-whats" type="tel" placeholder="67 9xxxx-xxxx" />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="s-tel">Telefone</label>
+          <input class="form-input" id="s-tel" type="tel" placeholder="67 3xxx-xxxx" />
+        </div>
+        <div class="form-group full">
+          <label class="form-label" for="s-sched">Horários de missa <span>*</span></label>
+          <textarea class="form-textarea" id="s-sched" placeholder="Ex: Sábado às 18h&#10;Domingo às 7h30 e 18h" required></textarea>
+          <span class="form-hint">Informe o dia da semana e os horários.</span>
+        </div>
+        <div class="form-group full">
+          <label class="form-label" for="s-obs">Observação</label>
+          <textarea class="form-textarea" id="s-obs" placeholder="Ex: Confirmar pelo WhatsApp antes de se deslocar." style="min-height:70px"></textarea>
+        </div>
+        <div class="form-group full">
+          <button class="btn-submit" id="btn-suggest" onclick="submitSuggest()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            Enviar Sugestão
+          </button>
+        </div>
+      </div>
+      <div class="form-success" id="suggest-success">
+        <strong>🙏 Obrigado pela contribuição!</strong>
+        Recebemos sua sugestão e vamos analisar em breve.<br>Que Deus abençoe seu caminho.
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <p><strong>Missas CG</strong> — Horários de Missa · Campo Grande · MS</p>
+  <p style="margin-top:.32rem">Horário exibido no fuso de <strong>Campo Grande (UTC−4)</strong>.</p>
+  <p style="margin-top:.7rem;font-size:.75rem;color:var(--gold);font-family:'Cinzel',serif;letter-spacing:.04em">
+    Feito com ❤️ por George
+  </p>
+</footer>
+
+<!-- MODAL REPORTAR -->
+<div class="modal-overlay" id="report-overlay" role="dialog" aria-modal="true">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-head">
+      <span class="modal-title">🚩 Reportar Horário</span>
+      <button class="modal-close" onclick="closeModal('report-overlay')">✕</button>
+    </div>
+    <p class="modal-sub" id="report-church-name"></p>
+    <div class="form-grid" id="report-form">
+      <div class="form-group full">
+        <label class="form-label" for="r-problem">O que está errado? <span>*</span></label>
+        <select class="form-select" id="r-problem" required>
+          <option value="">Selecione…</option>
+          <option value="horario_errado">Horário incorreto</option>
+          <option value="nao_tem_missa">Paróquia não tem missa neste horário</option>
+          <option value="endereco_errado">Endereço incorreto</option>
+          <option value="paroquia_fechada">Paróquia fechada / encerrada</option>
+          <option value="outro">Outro</option>
+        </select>
+      </div>
+      <div class="form-group full">
+        <label class="form-label" for="r-correct">Informação correta</label>
+        <textarea class="form-textarea" id="r-correct" placeholder="Ex: O horário correto é domingo às 8h e 10h." style="min-height:80px"></textarea>
+      </div>
+      <div class="form-group full">
+        <label class="form-label" for="r-contact">Seu contato (opcional)</label>
+        <input class="form-input" id="r-contact" type="text" placeholder="Nome ou WhatsApp para retorno" />
+        <span class="form-hint">Somente para esclarecimento, se necessário.</span>
+      </div>
+      <div class="form-group full">
+        <button class="btn-submit" id="btn-report-send" onclick="submitReport()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          Enviar Reporte
+        </button>
+      </div>
+    </div>
+    <div class="form-success" id="report-success">
+      <strong>✅ Reporte enviado!</strong>
+      Obrigado por ajudar a manter as informações corretas.<br>Vamos verificar e atualizar em breve.
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status"></div>
+
+<!-- NOTICE -->
+<div class="notice-overlay" id="notice-overlay">
+  <div class="notice-box">
+    <div class="notice-top">
+      <div class="notice-icon">🙏</div>
+      <div>
+        <div class="notice-title">Bem-vindo ao Missas CG</div>
+        <div class="notice-sub">Missas CG — Campo Grande · MS</div>
+      </div>
+    </div>
+    <div class="notice-body">
+      <p class="notice-text">
+        Que bom que você quer participar da Santa Missa! 🙏<br><br>
+        Os horários podem variar em <strong>festas, novenas e datas especiais</strong>. Verifique com a paróquia antes de sair.
+      </p>
+      <button class="notice-btn" onclick="closeNotice()">Entendi — Ver Missas ✝</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ─── NOTICE ─── */
+function closeNotice() {
+  var el = document.getElementById('notice-overlay');
+  if (!el) return;
+  el.style.opacity = '0'; el.style.transition = 'opacity .3s';
+  setTimeout(function(){ el.style.display = 'none'; }, 300);
+}
+
+/* ─── DATA ─── */
+var TZ     = 'America/Campo_Grande';
+var DAYS   = ['Domingo','Segunda-feira','Terça-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sábado'];
+var DAYS_S = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+
+// Missas: s = [{d:[dias 0=dom..6=sab], lbl:'label', t0:'HH:MM', t1:'HH:MM'}]
+var CHURCHES = [
+  {
+    id:1, name:'CATEDRAL NOSSA SENHORA DA ABADIA E SANTO ANTÔNIO DE PÁDUA',
+    nb:'centro', addr:'R. Tv. Lydia Baís, s/n - Centro, Campo Grande - MS, 79002-120',
+    phone:'(67) 3321-9886', whatsapp:'',
+    lat:-20.4662417, lng:-54.6185095,
+    mapsUrl:'https://www.google.com/maps/place/?q=place_id:ChIJk9JwcBjmhpQRnxvzNmuMsWA',
+    note:'',
+    s:[
+      {d:[0], lbl:'Domingo', t0:'08:00', t1:'08:45'},
+      {d:[0], lbl:'Domingo', t0:'09:30', t1:'10:15'},
+      {d:[2,3,4,5], lbl:'Ter a Sex', t0:'12:00', t1:'12:45'},
+      {d:[0,6], lbl:'Sáb e Dom', t0:'18:00', t1:'18:45'},
+      {d:[1], lbl:'Segunda-feira', t0:'19:00', t1:'19:45'},
+      {d:[0], lbl:'Domingo', t0:'19:30', t1:'20:15'}
+    ]
+  },
+  {
+    id:2, name:'Capelania Hospitalar',
+    nb:'centro', addr:'Av. Mato Grosso - Centro, Campo Grande - MS, 79002-351',
+    phone:'(67) 3317-4863', whatsapp:'5567992784217',
+    lat:-20.4554397, lng:-54.6156754,
+    mapsUrl:'https://www.google.com/maps/place/?q=place_id:ChIJu9YR1pLohpQRr3R0m0_n75U',
+    note:'',
+    s:[
+      {d:[1,2,3,4,5], lbl:'Seg a Sex', t0:'06:00', t1:'06:45'},
+      {d:[5], lbl:'Sexta-feira', t0:'09:00', t1:'09:45'},
+      {d:[0], lbl:'Domingo', t0:'10:00', t1:'10:45'},
+      {d:[4], lbl:'Quinta-feira', t0:'12:00', t1:'12:45'},
+      {d:[3], lbl:'Quarta-feira', t0:'12:15', t1:'13:00'},
+      {d:[4], lbl:'Quinta-feira', t0:'13:30', t1:'14:15'},
+      {d:[0], lbl:'Domingo', t0:'18:00', t1:'18:45'}
+    ]
+  },
+  {
+    id:3, name:'PAROQUIA CORAÇÃO EUCARÍSTICO DE JESUS',
+    nb:'oeste', addr:'R. Yokoama, 1260 - Vila Santo Amaro, Campo Grande - MS, 79112-260',
+    phone:'(67) 3361-5220', whatsapp:'5567992640412',
+    lat:-20.4356643, lng:-54.6544851,
+    mapsUrl:'https://www.google.com/maps/place/?q=place_id:ChIJwUApY9LnhpQRlhQ4zonrpuM',
+    note:'',
+    s:[
+      {d:[0], lbl:'Domingo', t0:'08:30', t1:'09:15'},
+      {d:[5], lbl:'Sexta-feira', t0:'15:00', t1:'15:45'},
+      {d:[6], lbl:'Sábado', t0:'18:00', t1:'18:45'},
+      {d:[0,4], lbl:'Dom, Qui', t0:'19:30', t1:'20:15'}
+    ]
+  },
+  {
+    id:4, name:'PAROQUIA NOSSA SENHORA DO PERPÉTUO SOCORRO (SANTUÁRIO ESTADUAL)',
+    nb:'centro', addr:'Av. Afonso Pena, 377 - Amambai, Campo Grande - MS, 79005-000',
+    phone:'(67) 3384-2818', whatsapp:'5567992811119',
+    lat:-20.4669744, lng:-54.6317634,
+    mapsUrl:'https://www.google.com/maps/place/?q=place_id:ChIJYbUUd0DmhpQRZCpZrj5gVUY',
+    note:'',
+    s:[
+      {d:[3], lbl:'Quarta-feira', t0:'06:00', t1:'06:45'},
+      {d:[0], lbl:'Domingo', t0:'07:00', t1:'07:45'},
+      {d:[4], lbl:'Quinta-feira', t0:'09:00', t1:'09:45'},
+      {d:[0], lbl:'Domingo', t0:'10:00', t1:'10:45'},
+      {d:[3], lbl:'Quarta-feira', t0:'12:00', t1:'12:45'},
+      {d:[4], lbl:'Quinta-feira', t0:'15:00', t1:'15:45'},
+      {d:[0], lbl:'Domingo', t0:'16:00', t1:'16:45'},
+      {d:[0], lbl:'Domingo', t0:'18:00', t1:'18:45'},
+      {d:[1,2,4,5,6], lbl:'Seg, Ter, Qui, Sex, Sáb', t0:'19:00', t1:'19:45'},
+      {d:[0], lbl:'Domingo', t0:'20:00', t1:'20:45'},
+      {d:[3], lbl:'Quarta-feira', t0:'21:00', t1:'21:45'}
+    ]
+  },
+  {
+    id:5, name:'PARÓQUIA  NOSSA SENHORA DA ABADIA (SANTUÁRIO)',
+    nb:'leste', addr:'Av. Afonso Pena, 7120 - Chácara Cachoeira, Campo Grande - MS, 79040-010',
+    phone:'(67) 3306-0050', whatsapp:'5567996719138',
+    lat:-20.4561851, lng:-54.5686181,
+    mapsUrl:'https://www.google.com/maps/place/?q=place_id:ChIJw28Fh8PohpQRYtgQPF8MM8Q',
+    note:'',
+    s:[
+      {d:[0], lbl:'Domingo', t0:'10:00', t1:'10:45'},
+      {d:[2,4], lbl:'Ter e Qui', t0:'12:00', t1:'12:45'},
+      {d:[5], lbl:'Sexta-feira', t0:'15:00', t1:'15:45'},
+      {d:[1,2,3,4,5,6], lbl:'Seg, Ter, Qua, Qui, Sex, Sáb', t0:'19:00', t1:'19:45'}
+    ]
+  },
+  {
+    id:6, name:'PARÓQUIA CRISTO BOM PASTOR',
+    nb:'sul', addr:'R. Paulo Hideo Katayama, 651 - Parque Res. Uniao, Campo Grande - MS, 79091-430',
+    phone:'(67) 3317-6960', whatsapp:'5567999321773',
+    lat:-20.4812356, lng:-54.6646857,
+    mapsUrl:'https://www.google.com/maps/place/?q=place_id:ChIJF9f5BZLmhpQRTr8X95yLE0k',
+    note:'',
+    s:[
+      {d:[0], lbl:'Domingo', t0:'08:30', t1:'09:15'},
+      {d:[0,1,2,3,4,5], lbl:'Dom, Seg, Ter, Qua, Qui, Sex', t0:'19:00', t1:'19:45'}
+    ]
+  },
+  {
+    id:7, name:'PARÓQUIA CRISTO LUZ DOS POVOS',
+    nb:'sul', addr:'Av. Bandeirantes, 2306 - Amambai, Campo Grande - MS, 79006-150',
+    phone:'(67) 3222-8321', whatsapp:'5567991302150',
+    lat:-20.4828878, lng:-54.6398278,
+    mapsUrl:'https://www.google.com/maps/place/?q=place_id:ChIJn92es3HmhpQRBNwUlA10pSk',
+    note:'',
+    s:[
+      {d:[1,2,4,5], lbl:'Seg, Ter, Qui, Sex', t0:'06:00', t1:'06:45'},
+      {d:[0], lbl:'Domingo', t0:'07:00', t1:'07:45'},
+      {d:[0], lbl:'Domingo', t0:'08:30', t1:'09:15'},
+      {d:[0], lbl:'Domingo', t0:'10:00', t1:'10:45'},
+      {d:[6], lbl:'Sábado', t0:'18:00', t1:'18:45'},
+      {d:[0,2,3,4,5], lbl:'Dom, Ter, Qua, Qui, Sex', t0:'19:00', t1:'19:45'}
+    ]
+  },
+  {
+    id:8, name:'PARÓQUIA CRISTO REDENTOR',
+    nb:'sul', addr:'R. Antônio Siufi, 139 - Guanandi, Campo Grande - MS, 79086-400',
+    phone:'(67) 3317-6951', whatsapp:'5567992485876',
+    lat:-20.4977192, lng:-54.6467212,
+    mapsUrl:'https://www.google.com/maps/place/?q=place_id:ChIJG1Zgt9blhpQR1JaWU-tTz-M',
+    note:'',
+    s:[
+      {d:[6], lbl:'Sábado', t0:'18:00', t1:'18:45'},
+      {d:[0], lbl:'Domingo', t0:'19:00', t1:'19:45'},
+      {d:[2], lbl:'Terça-feira', t0:'19:30', t1:'20:15'}
+    ]
+  },
+  {
+    id:9, name:'PARÓQUIA CRISTO REI',
+    nb:'sul', addr:'Av. do Cachalote, 524 - Coophavila II, Campo Grande - MS, 79097-140',
+    phone:'+55 67 99136-4891', whatsapp:'5567991364891',
+    lat:-20.5346682, lng:-54.672623,
+    mapsUrl:'https://www.google.com/maps/place/?q=place_id:ChIJL6ivLlzkhpQRCmPKEwltj1E',
+    note:'',
+    s:[
+      {d:[1,2,3,4,5,6], lbl:'Seg, Ter, Qua, Qui, Sex, Sáb', t0:'06:00', t1:'06:45'},
+      {d:[0], lbl:'Domingo', t0:'07:30', t1:'08:15'},
+      {d:[0], lbl:'Domingo', t0:'18:30', t1:'19:15'}
+    ]
+  },
+  {
+    id:10, name:'PARÓQUIA DIVINO ESPÍRITO SANTO',
+    nb:'sul', addr:'R. Galeão, 730-740 - Jardim Aero Rancho, Campo Grande - MS, 79083-352',
+    phone:'+55 67 99322-1427', whatsapp:'5567993221427',
+    lat:-20.5185161, lng:-54.6411142,
+    mapsUrl:'https://www.google.com/maps/place/?q=place_id:ChIJq4lBarrlhpQRGwdk--9O2Dg',
+    note:'',
+    s:[
+      {d:[0], lbl:'Domingo', t0:'07:30', t1:'08:15'},
+      {d:[6], lbl:'Sábado', t0:'18:00', t1:'18:45'},
+      {d:[3], lbl:'Quarta-feira', t0:'19:30', t1:'20:15'}
+    ]
+  },
+  {
+    id:11, name:'PARÓQUIA DIVINO PARÁCLITO',
+    nb:'sul', addr:'Av. Guaicurus, 4640 - Colibri 2, Campo Grande - MS, 79062-310',
+    phone:'+55 67 99131-3697', whatsapp:'5567991313697',
+    lat:-20.5287301, lng:-54.6103274,
+    mapsUrl:'https://www.google.com/maps/place/?q=place_id:ChIJWdXUJX7lhpQRd3ZUAz7Sko4',
+    note:'',
+    s:[
+      {d:[0], lbl:'Domingo', t0:'07:00', t1:'07:45'},
+      {d:[5], lbl:'Sexta-feira', t0:'19:00', t1:'19:45'},
+      {d:[5], lbl:'Sexta-feira', t0:'19:30', t1:'20:15'}
+    ]
+  },
+  {
+    id:12, name:'PARÓQUIA IMACULADO CORAÇÃO DE MARIA',
+    nb:'norte', addr:'Av. Hiroshima, 1233 - Carandá Bosque, Campo Grande - MS, 79032-050',
+    phone:'(67)  2525-8187', whatsapp:'55679209616067983369636796200868',
+    lat:-20.4356935, lng:-54.5671447,
+    mapsUrl:'https://www.google.com/maps/place/?q=place_id:ChIJQwMCt__ohpQRVdCK0FfpHTI',
+    note:'',
+    s:[
+      {d:[0], lbl:'Domingo', t0:'07:30', t1:'08:15'},
+      {d:[6], lbl:'Sábado', t0:'08:00', t1:'08:45'},
+      {d:[0], lbl:'Domingo', t0:'09:30', t1:'10:15'},
+      {d:[6], lbl:'Sábado', t0:'18:00', t1:'18:45'},
+      {d:[0,1,2,3,4,5], lbl:'Dom, Seg, Ter, Qua, Qui, Sex', t0:'19:00', t1:'19:45'}
+    ]
+  },
+  {
+    id:13, name:'PARÓQUIA MARIA AUXILIADORA DOS CRISTÃOS',
+    nb:'norte', addr:'R. Adriano Metelo, 472 - Jardim Imperial, Campo Grande - MS, 79011-420',
+    phone:'(67) 3029-7414', whatsapp:'5567991668088',
+    lat:-20.4231901, lng:-54.5922062,
+    mapsUrl:'https://www.google.com/maps/place/?q=place_id:ChIJASbyH2nohpQRy64k5lxAoeY',
+    note:'',
+    s:[
+      {d:[5], lbl:'Sexta-feira', t0:'06:00', t1:'06:45'},
+      {d:[0], lbl:'Domingo', t0:'07:00', t1:'07:45'},
+      {d:[0], lbl:'Domingo', t0:'09:30', t1:'10:15'},
+      {d:[0,4], lbl:'Dom, Qui', t0:'19:00', t1:'19:45'}
+    ]
+  },
+  {
+    id:14, name:'PARÓQUIA MARIA MEDIANEIRA DAS GRAÇAS',
+    nb:'oeste', addr:'Av. José Pereira, 372 - Vila Popular, Campo Grande - MS, 79106-540',
+    phone:'(67) 3363-7902', whatsapp:'',
+    lat:-20.449711, lng:-54.7032543,
+    mapsUrl:'https://www.google.com/maps/place/?q=place_id:ChIJy3X7nkPhhpQRaBg66IxB8KI',
+    note:'',
+    s:[
+      {d:[1,2,3,4,5,6], lbl:'Seg, Ter, Qua, Qui, Sex, Sáb', t0:'06:00', t1:'06:45'},
+      {d:[0], lbl:'Domingo', t0:'07:00', t1:'07:45'}
+    ]
+  },
+  {
+    id:15, name:'PARÓQUIA MARIA MÃE DA IGREJA',
+    nb:'sul', addr:'R. Felipe Calarge, 723 - Jardim Leblon, Campo Grande - MS, 79092-080',
+    phone:'(67)3204-1969', whatsapp:'5567998525634',
+    lat:-20.4960804, lng:-54.6583519,
+    mapsUrl:'https://www.google.com/maps/place/?q=place_id:ChIJC5k3BSrkhpQRvx1TvLyb8ac',
+    note:'',
+    s:[
+      {d:[1,2,3,5,6], lbl:'Seg, Ter, Qua, Sex, Sáb', t0:'06:00', t1:'06:45'},
+      {d:[0], lbl:'Domingo', t0:'07:30', t1:'08:15'},
+      {d:[0], lbl:'Domingo', t0:'10:00', t1:'10:45'},
+      {d:[0,4], lbl:'Dom, Qui', t0:'18:30', t1:'19:15'},
+      {d:[4], lbl:'Quinta-feira', t0:'19:00', t1:'19:45'}
+    ]
+  },
+  {
+    id:16, name:'PARÓQUIA NOSSA SENHORA APARECIDA DAS MORENINHAS',
+    nb:'sul', addr:'R. Minas Novas, 550 - Vila Cidade Morena, Campo Grande - MS, 79064-370',
+    phone:'(67) 3393-1428', whatsapp:'5567996548269',
+    lat:-20.5503226, lng:-54.5879512,
+    mapsUrl:'https://www.google.com/maps/place/?q=place_id:ChIJL02dVt3vhpQRdXa22kZXRVU',
+    note:'',
+    s:[
+      {d:[0], lbl:'Domingo', t0:'08:30', t1:'09:15'},
+      {d:[2], lbl:'Terça-feira', t0:'19:30', t1:'20:15'}
+    ]
+  },
+  {
+    id:17, name:'PARÓQUIA NOSSA SENHORA AUXILIADORA',
+    nb:'oeste', addr:'Av. Manoel Ferreira, 171 - Santo Antonio, Campo Grande - MS, 79100-330',
+    phone:'+55 67 99630-5672', whatsapp:'5567996305672',
+    lat:-20.4561096, lng:-54.652407,
+    mapsUrl:'https://www.google.com/maps/place/?q=place_id:ChIJvapIoFXmhpQRgv5Zg0ZseFY',
+    note:'',
+    s:[
+      {d:[5], lbl:'Sexta-feira', t0:'05:30', t1:'06:15'},
+      {d:[1,2,3,4], lbl:'Seg a Qui', t0:'05:40', t1:'06:25'},
+      {d:[0], lbl:'Domingo', t0:'06:30', t1:'07:15'},
+      {d:[0], lbl:'Domingo', t0:'08:00', t1:'08:45'},
+      {d:[0], lbl:'Domingo', t0:'10:00', t1:'10:45'},
+      {d:[1,2,3,4,5,6], lbl:'Seg, Ter, Qua, Qui, Sex, Sáb', t0:'11:00', t1:'11:45'},
+      {d:[0], lbl:'Domingo', t0:'17:00', t1:'17:45'},
+      {d:[6], lbl:'Sábado', t0:'18:00', t1:'18:45'},
+      {d:[0,1,2,3,4,5], lbl:'Dom, Seg, Ter, Qua, Qui, Sex', t0:'19:00', t1:'19:45'}
+    ]
+  },
+  {
+    id:18, name:'PARÓQUIA NOSSA SENHORA DA ABADIA – SIDROLÂNDIA',
+    nb:'interior', addr:'R. Santa Catarina, 750 - Centro, Sidrolândia - MS, 79170-000',
+    phone:'(67) 3272-1439', whatsapp:'5567996008717',
+    lat:-20.9301428, lng:-54.9604007,
+    mapsUrl:'https://www.google.com/maps/place/?q=place_id:ChIJbX2VkX2vh5QRMst5f58r7fs',
+    note:'',
+    s:[
+      {d:[5], lbl:'Sexta-feira', t0:'06:00', t1:'06:45'},
+      {d:[0], lbl:'Domingo', t0:'07:30', t1:'08:15'},
+      {d:[0], lbl:'Domingo', t0:'10:00', t1:'10:45'},
+      {d:[3], lbl:'Quarta-feira', t0:'19:00', t1:'19:45'}
+    ]
+  },
+  {
+    id:19, name:'PARÓQUIA NOSSA SENHORA DA CONCEIÇÃO APARECIDA',
+    nb:'oeste', addr:'Av. Tamandaré, 612 - Vila Planalto, Campo Grande - MS, 79009-790',
+    phone:'(67) 3317-4968', whatsapp:'5567981320833',
+    lat:-20.4548641, lng:-54.6334629,
+    mapsUrl:'https://www.google.com/maps/place/?q=place_id:ChIJdZHdmUnmhpQRdxelVfGvels',
+    note:'',
+    s:[
+      {d:[2,3,4,5], lbl:'Ter a Sex', t0:'06:00', t1:'06:45'},
+      {d:[0], lbl:'Domingo', t0:'08:00', t1:'08:45'},
+      {d:[0,6], lbl:'Sáb e Dom', t0:'19:00', t1:'19:45'}
+    ]
+  },
+  {
+    id:20, name:'PARÓQUIA NOSSA SENHORA DA CONCEIÇÃO APARECIDA – MUNICÍPIO DE BANDEIRANTES',
+    nb:'interior', addr:'Av. Francisco Antônio de Souza, 2161-2279 - Centro, Bandeirantes - MS, 79430-000',
+    phone:null, whatsapp:'5567992622281',
+    lat:-19.9191132, lng:-54.3655466,
+    mapsUrl:'https://www.google.com/maps/place/?q=place_id:ChIJE5lId0FJgZQRm_Nrso8_IGg',
+    note:'',
+    s:[
+      {d:[0], lbl:'Domingo', t0:'07:00', t1:'07:45'},
+      {d:[0,4,5,6], lbl:'Dom, Qui, Sex, Sáb', t0:'19:00', t1:'19:45'}
+    ]
+  },
+  {
+    id:21, name:'PARÓQUIA NOSSA SENHORA DA GUIA',
+    nb:'sul', addr:'R. Cabrália Paulista, 269 - Jardim Centenario, Campo Grande - MS, 79076-010',
+    phone:'+55 67 3317-6955', whatsapp:'5567992733653',
+    lat:-20.5347201, lng:-54.6501214,
+    mapsUrl:'https://www.google.com/maps/place/?q=place_id:ChIJAw7_eKrlhpQRhsnkBBiamzE',
+    note:'',
+    s:[
+      {d:[0], lbl:'Domingo', t0:'09:30', t1:'10:15'},
+      {d:[0], lbl:'Domingo', t0:'18:30', t1:'19:15'},
+      {d:[3], lbl:'Quarta-feira', t0:'19:00', t1:'19:45'},
+      {d:[4], lbl:'Quinta-feira', t0:'19:30', t1:'20:15'}
+    ]
+  },
+  {
+    id:22, name:'PARÓQUIA NOSSA SENHORA DAS GRAÇAS',
+    nb:'norte', addr:'R. Henrique Barbosa Martins, 875 - Nova Lima, Campo Grande - MS, 79017-070',
+    phone:'(67) 3317-8952', whatsapp:'5567992337702',
+    lat:-20.3885278, lng:-54.5644354,
+    mapsUrl:'https://www.google.com/maps/place/?q=place_id:ChIJHaifN37ChpQROLCiy3_yGLc',
+    note:'',
+    s:[
+      {d:[0], lbl:'Domingo', t0:'07:00', t1:'07:45'},
+      {d:[0,3], lbl:'Dom, Qua', t0:'19:30', t1:'20:15'}
+    ]
+  },
+  {
+    id:23, name:'PARÓQUIA NOSSA SENHORA DE FÁTIMA',
+    nb:'leste', addr:'R. Frei Gregório, 537 - Jardim Monte Libano, Campo Grande - MS, 79004-580',
+    phone:'(67) 3317-4972', whatsapp:'5567981765150981765152',
+    lat:-20.478293, lng:-54.6073213,
+    mapsUrl:'https://www.google.com/maps/place/?q=place_id:ChIJrSnZtpPmhpQRQz-RJvkq35s',
+    note:'',
+    s:[
+      {d:[0], lbl:'Domingo', t0:'07:00', t1:'07:45'},
+      {d:[0], lbl:'Domingo', t0:'08:30', t1:'09:15'},
+      {d:[6], lbl:'Sábado', t0:'16:00', t1:'16:45'},
+      {d:[0,2,3,4,5], lbl:'Dom, Ter, Qua, Qui, Sex', t0:'19:00', t1:'19:45'}
+    ]
+  },
+  {
+    id:24, name:'PARÓQUIA NOSSA SENHORA IMACULADA CONCEIÇÃO – MUNICÍPIO DE RIBAS DO RIO PARDO',
+    nb:'interior', addr:'R. Sen. Filinto Müller, 378-544 - Centro, Ribas do Rio Pardo - MS, 79180-000',
+    phone:'(67) 3238-1707', whatsapp:'5567996826161',
+    lat:-20.4444002, lng:-53.7574002,
+    mapsUrl:'https://www.google.com/maps/place/?q=place_id:ChIJLxrW3Qo2hJQRY5lfVbJjwHU',
+    note:'',
+    s:[
+      {d:[0], lbl:'Domingo', t0:'05:00', t1:'05:45'},
+      {d:[0], lbl:'Domingo', t0:'07:30', t1:'08:15'},
+      {d:[0,3,5], lbl:'Dom, Qua, Sex', t0:'19:00', t1:'19:45'},
+      {d:[4], lbl:'Quinta-feira', t0:'19:30', t1:'20:15'}
+    ]
+  },
+  {
+    id:25, name:'PARÓQUIA PESSOAL NOSSA SENHORA DA SAÚDE (Capelania Hospitalar)',
+    nb:'centro', addr:'Av. Mato Grosso - Centro, Campo Grande - MS, 79002-351',
+    phone:'(67) 3317-4863', whatsapp:'5567992784217',
+    lat:-20.4554397, lng:-54.6156754,
+    mapsUrl:'https://www.google.com/maps/place/?q=place_id:ChIJu9YR1pLohpQRr3R0m0_n75U',
+    note:'',
+    s:[
+      {d:[1,2,3,4,5], lbl:'Seg a Sex', t0:'06:00', t1:'06:45'},
+      {d:[5], lbl:'Sexta-feira', t0:'09:00', t1:'09:45'},
+      {d:[0], lbl:'Domingo', t0:'10:00', t1:'10:45'},
+      {d:[4], lbl:'Quinta-feira', t0:'12:00', t1:'12:45'},
+      {d:[3], lbl:'Quarta-feira', t0:'12:15', t1:'13:00'},
+      {d:[4], lbl:'Quinta-feira', t0:'13:30', t1:'14:15'},
+      {d:[0], lbl:'Domingo', t0:'18:00', t1:'18:45'}
+    ]
+  },
+  {
+    id:26, name:'PARÓQUIA SAGRADO CORAÇÃO DE JESUS',
+    nb:'norte', addr:'Av. Mato Grosso, 3280 - Centro, Campo Grande - MS, 79021-151',
+    phone:'(67) 3317-4865', whatsapp:'5567999581983',
+    lat:-20.4515481, lng:-54.5890635,
+    mapsUrl:'https://www.google.com/maps/place/?q=place_id:ChIJiRh3H5PohpQRrbyG79MVgPw',
+    note:'',
+    s:[
+      {d:[0,1,2,3,4,5], lbl:'Dom, Seg, Ter, Qua, Qui, Sex', t0:'06:15', t1:'07:00'},
+      {d:[0], lbl:'Domingo', t0:'07:30', t1:'08:15'},
+      {d:[0], lbl:'Domingo', t0:'09:00', t1:'09:45'},
+      {d:[0], lbl:'Domingo', t0:'17:00', t1:'17:45'},
+      {d:[6], lbl:'Sábado', t0:'18:00', t1:'18:45'},
+      {d:[0,1,2,3,5], lbl:'Dom, Seg, Ter, Qua, Sex', t0:'19:00', t1:'19:45'}
+    ]
+  },
+  {
+    id:27, name:'PARÓQUIA SAGRADOS CORAÇÕES DE JESUS E MARIA',
+    nb:'sul', addr:'R. Pôrto Rico, 734 - Vila Sao Jorge da Lagoa, Campo Grande - MS, 79095-010',
+    phone:'(67) 3056-1813', whatsapp:'5567991683947',
+    lat:-20.5232549, lng:-54.6661612,
+    mapsUrl:'https://www.google.com/maps/place/?q=place_id:ChIJ4cUM2UXkhpQRD1RPMO0cndg',
+    note:'',
+    s:[
+      {d:[0], lbl:'Domingo', t0:'07:00', t1:'07:45'},
+      {d:[0,5], lbl:'Dom, Sex', t0:'19:30', t1:'20:15'}
+    ]
+  },
+  {
+    id:28, name:'PARÓQUIA SANTA CATARINA VIRGEM E MÁRTIR – DISTRITO DE ANHANDUÍ',
+    nb:'interior', addr:'BR-163, 3010 - Anhanduí, Campo Grande - MS',
+    phone:null, whatsapp:'5567998505333',
+    lat:-20.9909725, lng:-54.5069513,
+    mapsUrl:'https://www.google.com/maps/place/?q=place_id:ChIJuYd-wiZBhpQRREVxoYa0TFU',
+    note:'',
+    s:[
+      {d:[0], lbl:'Domingo', t0:'07:00', t1:'07:45'},
+      {d:[0], lbl:'Domingo', t0:'10:00', t1:'10:45'},
+      {d:[0,5], lbl:'Dom, Sex', t0:'19:00', t1:'19:45'}
+    ]
+  },
+  {
+    id:29, name:'PARÓQUIA SANTA CLARA',
+    nb:'oeste', addr:'R. Sacramento, 816 - São Francisco, Campo Grande - MS, 79118-021',
+    phone:'(67) 3325-1099', whatsapp:'5567998040666',
+    lat:-20.4303168, lng:-54.6247746,
+    mapsUrl:'https://www.google.com/maps/place/?q=place_id:ChIJrwZT7MPnhpQRZhqL5kXE5Wg',
+    note:'',
+    s:[
+      {d:[0], lbl:'Domingo', t0:'08:00', t1:'08:45'},
+      {d:[0], lbl:'Domingo', t0:'18:30', t1:'19:15'},
+      {d:[3], lbl:'Quarta-feira', t0:'19:00', t1:'19:45'}
+    ]
+  },
+  {
+    id:30, name:'PARÓQUIA SANTA LUZIA',
+    nb:'oeste', addr:'R. Santa Madalena, 296 - Vila Santa Luzia, Campo Grande - MS, 79116-580',
+    phone:'(67) 3023-6966', whatsapp:'5567998653841',
+    lat:-20.4141182, lng:-54.6438987,
+    mapsUrl:'https://www.google.com/maps/place/?q=place_id:ChIJ6eVca4bnhpQRcl9fQJ3BH1I',
+    note:'',
+    s:[
+      {d:[4], lbl:'Quinta-feira', t0:'06:00', t1:'06:45'},
+      {d:[0], lbl:'Domingo', t0:'07:00', t1:'07:45'},
+      {d:[0], lbl:'Domingo', t0:'10:00', t1:'10:45'},
+      {d:[0], lbl:'Domingo', t0:'18:30', t1:'19:15'},
+      {d:[4], lbl:'Quinta-feira', t0:'19:00', t1:'19:45'}
+    ]
+  },
+  {
+    id:31, name:'PARÓQUIA SANTA RITA DE CÁSSIA',
+    nb:'sul', addr:'R. João Maiolino, 306 - Universitário, Campo Grande - MS, 79063-540',
+    phone:'(67) 3317-4979', whatsapp:'5567984117715',
+    lat:-20.5184953, lng:-54.5959644,
+    mapsUrl:'https://www.google.com/maps/place/?q=place_id:ChIJ20StH3fvhpQRiME30yXmuFc',
+    note:'',
+    s:[
+      {d:[1,2,3,4,5], lbl:'Seg a Sex', t0:'06:00', t1:'06:45'},
+      {d:[0], lbl:'Domingo', t0:'07:00', t1:'07:45'},
+      {d:[3], lbl:'Quarta-feira', t0:'15:00', t1:'15:45'},
+      {d:[0,6], lbl:'Sáb e Dom', t0:'18:30', t1:'19:15'}
+    ]
+  },
+  {
+    id:32, name:'PARÓQUIA SANTA RITA DE CÁSSIA – MUNICÍPIO DE JARAGUARI',
+    nb:'interior', addr:'Gonçalves Luiz Martins, s/n - Centro, Jaraguari - MS, 79440-000',
+    phone:'+55 67 3285-1153', whatsapp:'5567991376831',
+    lat:-20.1010625, lng:-54.4360168,
+    mapsUrl:'https://www.google.com/maps/place/?q=place_id:ChIJq6qqqqq-hpQRvAUXbkvRehE',
+    note:'',
+    s:[
+      {d:[0], lbl:'Domingo', t0:'07:00', t1:'07:45'},
+      {d:[3], lbl:'Quarta-feira', t0:'19:00', t1:'19:45'}
+    ]
+  },
+  {
+    id:33, name:'PARÓQUIA SANTO AFONSO MARIA DE LIGÓRIO',
+    nb:'oeste', addr:'R. Alberto Tôrres, 595 - Vila Serradinho, Campo Grande - MS, 79104-020',
+    phone:'(67)3391-7287', whatsapp:'5567991277799',
+    lat:-20.4561832, lng:-54.6836279,
+    mapsUrl:'https://www.google.com/maps/place/?q=place_id:ChIJJ8apYCbnhpQRZu2L0R794FM',
+    note:'',
+    s:[
+      {d:[0], lbl:'Domingo', t0:'07:00', t1:'07:45'},
+      {d:[0], lbl:'Domingo', t0:'19:00', t1:'19:45'},
+      {d:[4], lbl:'Quinta-feira', t0:'19:30', t1:'20:15'}
+    ]
+  },
+  {
+    id:34, name:'PARÓQUIA SANTO AGOSTINHO DE HIPONA',
+    nb:'sul', addr:'R. Franklin Espíndola, 605 - Vila Taveiropolis, Campo Grande - MS, 79090-080',
+    phone:'(67) 3331-6612', whatsapp:'5567999004073',
+    lat:-20.4725579, lng:-54.6478011,
+    mapsUrl:'https://www.google.com/maps/place/?q=place_id:ChIJ1xW_Bl7mhpQR-9H1WU5EDiU',
+    note:'',
+    s:[
+      {d:[1,2,3,4,5,6], lbl:'Seg, Ter, Qua, Qui, Sex, Sáb', t0:'06:15', t1:'07:00'},
+      {d:[0], lbl:'Domingo', t0:'07:00', t1:'07:45'},
+      {d:[0], lbl:'Domingo', t0:'10:00', t1:'10:45'},
+      {d:[0,3], lbl:'Dom, Qua', t0:'18:00', t1:'18:45'},
+      {d:[4], lbl:'Quinta-feira', t0:'19:00', t1:'19:45'}
+    ]
+  },
+  {
+    id:35, name:'PARÓQUIA SANTO ANTONIO DE PÁDUA – SANTUÁRIO – MUNICÍPIO DE TERENOS',
+    nb:'interior', addr:'Av. Dr. Ari Coelho de Oliveira, 730 - Centro, Terenos - MS, 79190-000',
+    phone:'(67) 3246-7264', whatsapp:'5567992585661',
+    lat:-20.4429298, lng:-54.8656491,
+    mapsUrl:'https://www.google.com/maps/place/?q=place_id:ChIJ5yRPCfMhh5QRdZR9Spe89Bk',
+    note:'',
+    s:[
+      {d:[0], lbl:'Domingo', t0:'08:00', t1:'08:45'},
+      {d:[2,6], lbl:'Ter, Sáb', t0:'19:00', t1:'19:45'}
+    ]
+  },
+  {
+    id:36, name:'PARÓQUIA SANTO EXPEDITO',
+    nb:'sul', addr:'R. Deocleciano Dias Bagagem, 908 - Jardim Itamaraca, Campo Grande - MS, 79062-350',
+    phone:'+55 67 99982-6565', whatsapp:'5567999826565',
+    lat:-20.5185474, lng:-54.5685482,
+    mapsUrl:'https://www.google.com/maps/place/?q=place_id:ChIJh_HhqqvvhpQRyo8_UOJ_Yvo',
+    note:'',
+    s:[
+      {d:[0], lbl:'Domingo', t0:'09:00', t1:'09:45'},
+      {d:[3,5], lbl:'Qua e Sex', t0:'19:30', t1:'20:15'}
+    ]
+  },
+  {
+    id:37, name:'PARÓQUIA SENHOR BOM JESUS',
+    nb:'leste', addr:'R. Cândida Lima de Barros, 293 - Tiradentes, Campo Grande - MS, 79041-390',
+    phone:'(67) 3341-0988', whatsapp:'5567996745781',
+    lat:-20.4728556, lng:-54.5801686,
+    mapsUrl:'https://www.google.com/maps/place/?q=place_id:ChIJlZnVJMzohpQRL5AsbjtmZB8',
+    note:'',
+    s:[
+      {d:[1,2,3,4,5,6], lbl:'Seg, Ter, Qua, Qui, Sex, Sáb', t0:'06:00', t1:'06:45'},
+      {d:[0], lbl:'Domingo', t0:'07:00', t1:'07:45'},
+      {d:[0], lbl:'Domingo', t0:'10:00', t1:'10:45'},
+      {d:[0], lbl:'Domingo', t0:'18:00', t1:'18:45'},
+      {d:[3], lbl:'Quarta-feira', t0:'19:30', t1:'20:15'}
+    ]
+  },
+  {
+    id:38, name:'PARÓQUIA SENHOR BOM JESUS – MUNICÍPIO DE CORGUINHO',
+    nb:'interior', addr:'Av. Paulo Vieira, 291 - Centro, Corguinho - MS, 79460-000',
+    phone:'+55 67 3250-1163', whatsapp:'5567998223317',
+    lat:-19.8330797, lng:-54.8297144,
+    mapsUrl:'https://www.google.com/maps/place/?q=place_id:ChIJZTT4qLLfgJQR6rwti1wZOmQ',
+    note:'',
+    s:[
+      {d:[0], lbl:'Domingo', t0:'07:30', t1:'08:15'},
+      {d:[4], lbl:'Quinta-feira', t0:'18:00', t1:'18:45'},
+      {d:[5], lbl:'Sexta-feira', t0:'19:00', t1:'19:45'}
+    ]
+  },
+  {
+    id:39, name:'PARÓQUIA SENHOR BOM JESUS – MUNICÍPIO DE ROCHEDO',
+    nb:'interior', addr:'R. Joaquim Murtinho, 101 - Rochedo, MS, 79450-000',
+    phone:'(67) 3289-1110', whatsapp:'5567996745781',
+    lat:-19.9520124, lng:-54.8927092,
+    mapsUrl:'https://www.google.com/maps/place/?q=place_id:ChIJ2_bxayLagJQRXPPDjK_Wgdc',
+    note:'',
+    s:[
+      {d:[0], lbl:'Domingo', t0:'08:00', t1:'08:45'},
+      {d:[3,6], lbl:'Qua, Sáb', t0:'19:00', t1:'19:45'}
+    ]
+  },
+  {
+    id:40, name:'PARÓQUIA SENHOR DO BONFIM',
+    nb:'norte', addr:'R. Capiata, 40 - Parque dos Novos Estados, Campo Grande - MS, 79034-331',
+    phone:'(67) 3354-5569', whatsapp:'5567992849151991015130',
+    lat:-20.4227778, lng:-54.5658333,
+    mapsUrl:'https://www.google.com/maps/place/?q=place_id:ChIJ1f26rFLohpQRHbTwJkQumG0',
+    note:'',
+    s:[
+      {d:[0], lbl:'Domingo', t0:'08:00', t1:'08:45'},
+      {d:[0], lbl:'Domingo', t0:'10:00', t1:'10:45'},
+      {d:[5], lbl:'Sexta-feira', t0:'15:00', t1:'15:45'},
+      {d:[0,2,3,4,6], lbl:'Dom, Ter, Qua, Qui, Sáb', t0:'19:00', t1:'19:45'},
+      {d:[1], lbl:'Segunda-feira', t0:'19:30', t1:'20:15'}
+    ]
+  },
+  {
+    id:41, name:'PARÓQUIA SÃO FRANCISCO DE ASSIS',
+    nb:'centro', addr:'Rua 14 de Julho, 4213 - Centro, Campo Grande - MS, 79010-470',
+    phone:'+55 67 3317-7950', whatsapp:'',
+    lat:-20.4427709, lng:-54.6196067,
+    mapsUrl:'https://www.google.com/maps/place/?q=place_id:ChIJDeEEhRvmhpQRYKbsnCHY8Og',
+    note:'',
+    s:[
+      {d:[0,1,2,3,4,5,6], lbl:'Dom, Seg, Ter, Qua, Qui, Sex, Sáb', t0:'06:00', t1:'06:45'},
+      {d:[0], lbl:'Domingo', t0:'08:00', t1:'08:45'},
+      {d:[0], lbl:'Domingo', t0:'10:00', t1:'10:45'},
+      {d:[0], lbl:'Domingo', t0:'17:30', t1:'18:15'},
+      {d:[6], lbl:'Sábado', t0:'18:00', t1:'18:45'},
+      {d:[0], lbl:'Domingo', t0:'19:30', t1:'20:15'}
+    ]
+  },
+  {
+    id:42, name:'PARÓQUIA SÃO FRANCISCO DE SALES',
+    nb:'oeste', addr:'R. Pinto Dágua, 837 - Recanto dos Pássaros, Campo Grande - MS, 79113-220',
+    phone:'(67) 3201-4000', whatsapp:'5567981630023',
+    lat:-20.4390877, lng:-54.6721014,
+    mapsUrl:'https://www.google.com/maps/place/?q=place_id:ChIJZYeJ_BTnhpQRItdi2Am7NHE',
+    note:'',
+    s:[
+      {d:[0], lbl:'Domingo', t0:'09:00', t1:'09:45'},
+      {d:[4], lbl:'Quinta-feira', t0:'18:00', t1:'18:45'},
+      {d:[4], lbl:'Quinta-feira', t0:'19:30', t1:'20:15'}
+    ]
+  },
+  {
+    id:43, name:'PARÓQUIA SÃO JOSÉ',
+    nb:'centro', addr:'R. Pedro Celestino, 1446 - Centro, Campo Grande - MS, 79002-371',
+    phone:'+55 67 3317-4960', whatsapp:'5567999795173992939979',
+    lat:-20.4608392, lng:-54.6121118,
+    mapsUrl:'https://www.google.com/maps/place/?q=place_id:ChIJzdsWHSHmhpQR4qpe10AgikU',
+    note:'',
+    s:[
+      {d:[0,1,2,3,4,5], lbl:'Dom, Seg, Ter, Qua, Qui, Sex', t0:'06:15', t1:'07:00'},
+      {d:[0], lbl:'Domingo', t0:'07:30', t1:'08:15'},
+      {d:[0], lbl:'Domingo', t0:'09:00', t1:'09:45'},
+      {d:[3], lbl:'Quarta-feira', t0:'12:00', t1:'12:45'},
+      {d:[0], lbl:'Domingo', t0:'16:30', t1:'17:15'},
+      {d:[0,6], lbl:'Sáb e Dom', t0:'18:00', t1:'18:45'},
+      {d:[1,2,3,4], lbl:'Seg a Qui', t0:'19:00', t1:'19:45'},
+      {d:[0], lbl:'Domingo', t0:'19:30', t1:'20:15'}
+    ]
+  },
+  {
+    id:44, name:'PARÓQUIA SÃO JOSÉ DE ANCHIETA',
+    nb:'leste', addr:'R. Nove de Julho, 517 - Vila Piratininga, Campo Grande - MS, 79081-050',
+    phone:null, whatsapp:'5567999795173992939979',
+    lat:-20.4989127, lng:-54.6308994,
+    mapsUrl:'https://www.google.com/maps/place/?q=place_id:ChIJOSdI-uflhpQRj6wsw2RYsa4',
+    note:'',
+    s:[
+      {d:[0], lbl:'Domingo', t0:'05:00', t1:'05:45'}
+    ]
+  },
+  {
+    id:45, name:'PARÓQUIA SÃO JOÃO BATISTA',
+    nb:'oeste', addr:'R. Francisco Sábino, 58 - Vila Nossa Sra. das Gracas, Campo Grande - MS, 79116-120',
+    phone:'(67)3317-7965', whatsapp:'5567984678495',
+    lat:-20.424056, lng:-54.6386073,
+    mapsUrl:'https://www.google.com/maps/place/?q=place_id:ChIJJZcYNJHnhpQRhHBhVytDyqY',
+    note:'',
+    s:[
+      {d:[1,2,3,4,5,6], lbl:'Seg, Ter, Qua, Qui, Sex, Sáb', t0:'06:00', t1:'06:45'},
+      {d:[0], lbl:'Domingo', t0:'07:00', t1:'07:45'},
+      {d:[0], lbl:'Domingo', t0:'19:00', t1:'19:45'}
+    ]
+  },
+  {
+    id:46, name:'PARÓQUIA SÃO JOÃO BOSCO',
+    nb:'norte', addr:'R. Paraíba, 1787 - Vila Gomes, Campo Grande - MS, 79022-310',
+    phone:'(67) 3204-3206', whatsapp:'',
+    lat:-20.4468596, lng:-54.6014578,
+    mapsUrl:'https://www.google.com/maps/place/?q=place_id:ChIJY9I5FtQtWpMRrHB4mjD8LpA',
+    note:'',
+    s:[
+      {d:[0], lbl:'Domingo', t0:'08:00', t1:'08:45'},
+      {d:[0], lbl:'Domingo', t0:'10:00', t1:'10:45'},
+      {d:[0], lbl:'Domingo', t0:'17:00', t1:'17:45'},
+      {d:[6], lbl:'Sábado', t0:'18:30', t1:'19:15'},
+      {d:[0,1,2,3,4,5], lbl:'Dom, Seg, Ter, Qua, Qui, Sex', t0:'19:00', t1:'19:45'}
+    ]
+  },
+  {
+    id:47, name:'PARÓQUIA SÃO JOÃO CALÁBRIA',
+    nb:'sul', addr:'R. Olivério Rodrigues da Luz, 247 - Jardim das Macaubas, Campo Grande - MS, 79073-050',
+    phone:'(67) 3397-6042', whatsapp:'5567998925657',
+    lat:-20.548645, lng:-54.6204071,
+    mapsUrl:'https://www.google.com/maps/place/?q=place_id:ChIJT33uqkLlhpQRpCoVGz7m-SQ',
+    note:'',
+    s:[
+      {d:[3,5], lbl:'Qua e Sex', t0:'06:30', t1:'07:15'},
+      {d:[0], lbl:'Domingo', t0:'09:00', t1:'09:45'},
+      {d:[0], lbl:'Domingo', t0:'18:00', t1:'18:45'},
+      {d:[5], lbl:'Sexta-feira', t0:'19:00', t1:'19:45'}
+    ]
+  },
+  {
+    id:48, name:'PARÓQUIA SÃO JOÃO EVANGELISTA',
+    nb:'sul', addr:'R. Ilha de Marajó, 800-874 - Portal Caioba, Campo Grande - MS, 79096-100',
+    phone:'(67) 3386-6293', whatsapp:'5567991043878',
+    lat:-20.5218208, lng:-54.6839084,
+    mapsUrl:'https://www.google.com/maps/place/?q=place_id:ChIJ44L30xLkhpQREUeT9HuJfZo',
+    note:'',
+    s:[
+      {d:[0], lbl:'Domingo', t0:'07:00', t1:'07:45'},
+      {d:[0], lbl:'Domingo', t0:'18:30', t1:'19:15'},
+      {d:[3,5], lbl:'Qua e Sex', t0:'19:30', t1:'20:15'}
+    ]
+  },
+  {
+    id:49, name:'PARÓQUIA SÃO JUDAS TADEU (SANTUÁRIO)',
+    nb:'leste', addr:'R. Fernando Augusto Corrêa da Costa, 58 - Jardim América, Campo Grande - MS, 79080-790',
+    phone:'(67) 3305-5955', whatsapp:'5567984781711',
+    lat:-20.4805607, lng:-54.6203773,
+    mapsUrl:'https://www.google.com/maps/place/?q=place_id:ChIJR8xY_wXmhpQR-s2akN_9qO8',
+    note:'',
+    s:[
+      {d:[0], lbl:'Domingo', t0:'08:00', t1:'08:45'},
+      {d:[0,6], lbl:'Sáb e Dom', t0:'18:30', t1:'19:15'}
+    ]
+  },
+  {
+    id:50, name:'PARÓQUIA SÃO LEOPOLDO MANDIC',
+    nb:'leste', addr:'R. João Francisco Damasceno, 304 - Parque Res. Maria Aparecida Pedrossian, Campo Grande - MS, 79044-451',
+    phone:'(67) 3317-5957', whatsapp:'5567991716668',
+    lat:-20.470825, lng:-54.5504843,
+    mapsUrl:'https://www.google.com/maps/place/?q=place_id:ChIJuz_i98zuhpQRE6DMgg3Wb7A',
+    note:'',
+    s:[
+      {d:[0,2], lbl:'Dom, Ter', t0:'06:00', t1:'06:45'},
+      {d:[6], lbl:'Sábado', t0:'07:00', t1:'07:45'},
+      {d:[1,2,3,4,5], lbl:'Seg a Sex', t0:'12:00', t1:'12:45'},
+      {d:[3], lbl:'Quarta-feira', t0:'19:00', t1:'19:45'},
+      {d:[0], lbl:'Domingo', t0:'19:30', t1:'20:15'}
+    ]
+  },
+  {
+    id:51, name:'PARÓQUIA SÃO MARTINHO DE LIMA',
+    nb:'sul', addr:'R. Barão de Limeira, 1683 - Pioneiros, Campo Grande - MS, 79070-150',
+    phone:'(67) 3043-6124', whatsapp:'5567992560669',
+    lat:-20.5192598, lng:-54.61847,
+    mapsUrl:'https://www.google.com/maps/place/?q=place_id:ChIJNf9DG4XlhpQRnex5viu4MR8',
+    note:'',
+    s:[
+      {d:[0], lbl:'Domingo', t0:'07:30', t1:'08:15'},
+      {d:[5], lbl:'Sexta-feira', t0:'16:00', t1:'16:45'},
+      {d:[0], lbl:'Domingo', t0:'18:30', t1:'19:15'},
+      {d:[4], lbl:'Quinta-feira', t0:'19:30', t1:'20:15'}
+    ]
+  },
+  {
+    id:52, name:'PARÓQUIA SÃO PEDRO APÓSTOLO',
+    nb:'norte', addr:'Av. Pres. Castelo Branco, 781 - Cel. Antonino, Campo Grande - MS, 79010-280',
+    phone:'(67) 3317-4862', whatsapp:'',
+    lat:-20.430014, lng:-54.5991785,
+    mapsUrl:'https://www.google.com/maps/place/?q=place_id:ChIJA80TBHDohpQRqL3GWr4Hfuo',
+    note:'',
+    s:[
+      {d:[0], lbl:'Domingo', t0:'07:00', t1:'07:45'},
+      {d:[0], lbl:'Domingo', t0:'10:00', t1:'10:45'},
+      {d:[0], lbl:'Domingo', t0:'18:00', t1:'18:45'},
+      {d:[4], lbl:'Quinta-feira', t0:'19:00', t1:'19:45'}
+    ]
+  },
+  {
+    id:53, name:'PARÓQUIA SÃO SEBASTIÃO',
+    nb:'norte', addr:'R. Minas Gerais, 549 - Monte Carlo, Campo Grande - MS, 79022-280',
+    phone:'(67) 3317-4863', whatsapp:'5567992784217',
+    lat:-20.4381396, lng:-54.591639,
+    mapsUrl:'https://www.google.com/maps/place/?q=place_id:ChIJWQDR6GHohpQRyIWZDi7rXHA',
+    note:'',
+    s:[
+      {d:[0], lbl:'Domingo', t0:'07:00', t1:'07:45'},
+      {d:[0], lbl:'Domingo', t0:'08:30', t1:'09:15'},
+      {d:[0], lbl:'Domingo', t0:'10:00', t1:'10:45'},
+      {d:[0,6], lbl:'Sáb e Dom', t0:'18:00', t1:'18:45'},
+      {d:[1,2,3,4,5], lbl:'Seg a Sex', t0:'19:00', t1:'19:45'}
+    ]
+  },
+  {
+    id:54, name:'PARÓQUIA UNIVERSITÁRIA SÃO JOÃO BOSCO',
+    nb:'centro', addr:'Av. Tamandaré, 6000 - Seminário, Campo Grande - MS, 79117-900',
+    phone:'+55 67 3312-3300', whatsapp:'5567981452094',
+    lat:-20.4079816, lng:-54.6163835,
+    mapsUrl:'https://www.google.com/maps/place/?q=place_id:ChIJS_kbaPnnhpQRRjmf0o3rvJQ',
+    note:'',
+    s:[
+      {d:[4], lbl:'Quinta-feira', t0:'08:30', t1:'09:15'},
+      {d:[4], lbl:'Quinta-feira', t0:'10:00', t1:'10:45'},
+      {d:[0], lbl:'Domingo', t0:'18:30', t1:'19:15'},
+      {d:[3], lbl:'Quarta-feira', t0:'20:30', t1:'21:15'}
+    ]
+  }
+];
+
+/* ─── HELPERS ─── */
+function getNow() {
+  return new Date(new Date().toLocaleString('en-US', {timeZone: TZ}));
+}
+function toMin(t) { var p=t.split(':'); return parseInt(p[0])*60+parseInt(p[1]); }
+
+function temMissaProxima(c, now) {
+  // Retorna true se a paróquia tem missa nas próximas 3 horas (hoje ou amanhã cedo)
+  var day = now.getDay();
+  var cur = now.getHours() * 60 + now.getMinutes();
+  var limite = cur + 180; // 3 horas à frente
+  for (var i = 0; i < c.s.length; i++) {
+    var s = c.s[i];
+    for (var j = 0; j < s.d.length; j++) {
+      // Hoje
+      if (s.d[j] === day) {
+        var t = toMin(s.t0);
+        if (t >= cur && t <= limite) return true;
+      }
+      // Amanhã nas primeiras 2h
+      var amanha = (day + 1) % 7;
+      if (s.d[j] === amanha && toMin(s.t0) <= 120) return true;
+    }
+  }
+  return false;
+}
+
+function hasMissaHoje(c, now) {
+  var day = now.getDay();
+  for (var i=0;i<c.s.length;i++) {
+    for (var j=0;j<c.s[i].d.length;j++) {
+      if (c.s[i].d[j]===day) return true;
+    }
+  }
+  return false;
+}
+
+function isMissaAgora(c, now) {
+  var day=now.getDay(), cur=now.getHours()*60+now.getMinutes();
+  for (var i=0;i<c.s.length;i++) {
+    var s=c.s[i];
+    for (var j=0;j<s.d.length;j++) {
+      if (s.d[j]===day && cur>=toMin(s.t0) && cur<toMin(s.t1)) return true;
+    }
+  }
+  return false;
+}
+
+function slotNow(s, now) {
+  var day=now.getDay(), cur=now.getHours()*60+now.getMinutes();
+  for (var j=0;j<s.d.length;j++) {
+    if (s.d[j]===day && cur>=toMin(s.t0) && cur<toMin(s.t1)) return true;
+  }
+  return false;
+}
+
+function proximaMissa(c, now) {
+  var day=now.getDay(), cur=now.getHours()*60+now.getMinutes();
+  for (var d=0;d<7;d++) {
+    var cd=(day+d)%7, best=null;
+    for (var i=0;i<c.s.length;i++) {
+      var s=c.s[i];
+      for (var j=0;j<s.d.length;j++) {
+        if (s.d[j]===cd) {
+          if (d===0 && toMin(s.t0)<=cur) continue;
+          if (!best || toMin(s.t0)<toMin(best.t0)) best=s;
+        }
+      }
+    }
+    if (best) {
+      var lbl = d===0?'hoje':(d===1?'amanhã':DAYS_S[cd]);
+      return 'Próxima: '+lbl+' às '+best.t0;
+    }
+  }
+  return null;
+}
+
+function mapsLink(c) {
+  if (c.mapsUrl)  return c.mapsUrl;
+  if (c.mapsAddr) return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(c.mapsAddr);
+  return 'https://www.google.com/maps/dir/?api=1&destination=' + c.lat + ',' + c.lng;
+}
+
+function whatsLink(num, name) {
+  return 'https://wa.me/'+num+'?text='+encodeURIComponent('Olá! Vi os horários de missa da '+name+' no site Missas CG. Gostaria de confirmar os horários de missa. Obrigado!');
+}
+
+
+
+/* ─── STATE ─── */
+var activeFilter = 'all';
+var searchQuery  = '';
+var FIRST_RENDER = true;
+var reportChurchId = null;
+
+/* ─── RENDER ─── */
+function render() {
+  var now  = getNow();
+  var grid = document.getElementById('grid');
+  var q    = searchQuery.toLowerCase();
+  var i, j, c, s, hl, rows, card, html, nxt;
+
+  var list = [];
+  for (i=0;i<CHURCHES.length;i++) {
+    var ch=CHURCHES[i];
+    list.push({
+      id:ch.id, name:ch.name, nb:ch.nb, addr:ch.addr,
+      phone:ch.phone, whatsapp:ch.whatsapp,
+      lat:ch.lat, lng:ch.lng, note:ch.note, s:ch.s,
+      hoje: hasMissaHoje(ch, now),
+      agora: isMissaAgora(ch, now)
+    });
+  }
+
+  list.sort(function(a,b){
+    if (activeFilter === 'proximas') {
+      return temMissaProxima(b, now) - temMissaProxima(a, now);
+    }
+    return b.hoje - a.hoje;
+  });
+
+  var filtered = [];
+  for (i=0;i<list.length;i++) {
+    c=list[i];
+    if (activeFilter==='proximas' && !temMissaProxima(c, now)) continue;
+    if (activeFilter==='aberta'   && !c.hoje)              continue;
+    if (activeFilter==='centro'   && c.nb!=='centro')       continue;
+    if (activeFilter==='outros'   && c.nb!=='outros')       continue;
+    if (activeFilter==='interior' && c.nb!=='interior')     continue;
+    if (q && c.name.toLowerCase().indexOf(q)===-1 && c.addr.toLowerCase().indexOf(q)===-1) continue;
+    filtered.push(c);
+  }
+
+  // Status bar
+  var comHoje=0;
+  for (i=0;i<CHURCHES.length;i++) { if (hasMissaHoje(CHURCHES[i],now)) comHoje++; }
+  var sb=document.getElementById('status-bar');
+  var st=document.getElementById('status-txt');
+  if (comHoje>0) {
+    st.textContent=comHoje+' paróquia'+(comHoje>1?'s':'')+' com missa hoje — '+DAYS[now.getDay()];
+    sb.className='status-bar has-open';
+  } else {
+    st.textContent='Nenhuma missa no momento — '+DAYS[now.getDay()];
+    sb.className='status-bar';
+  }
+
+  if (filtered.length===0) {
+    grid.innerHTML='<div class="empty"><span>⛪</span><p>Nenhuma paróquia encontrada.<br>Tente outro filtro.</p></div>';
+    return;
+  }
+
+  html='';
+  for (i=0;i<filtered.length;i++) {
+    c=filtered[i];
+    nxt=!c.hoje ? proximaMissa(c, now) : null;
+
+    rows='';
+    for (j=0;j<c.s.length;j++) {
+      s=c.s[j]; hl=slotNow(s,now);
+      var eHoje = s.d.indexOf(now.getDay()) !== -1;
+      var cls = hl ? ' is-now' : (eHoje ? ' is-hoje' : '');
+      rows+='<div class="sched-row'+cls+'">';
+      rows+='<span class="sdot"></span>';
+      rows+='<span class="sday">'+s.lbl+'</span>';
+      rows+='<span class="stim">'+s.t0+'</span>';
+      rows+='<span class="scheck">✓</span>';
+      rows+='</div>';
+    }
+
+    card ='<div class="card'+(c.hoje?' is-open':'')+'" style="animation-delay:'+(i*0.07)+'s">';
+    card+='<div class="card-bar"></div>';
+    card+='<div class="card-head"><div>';
+    card+='<div class="card-name">'+c.name+'</div>';
+    card+='<div class="card-addr">'+c.addr+'</div>';
+    card+='</div>';
+    card+='<span class="badge '+(c.hoje?'b-open':'b-closed')+'">'+(c.hoje?'Hoje':'Sem missa hoje')+'</span>';
+    card+='</div>';
+    card+='<div class="card-div"></div>';
+    card+='<div class="card-body">';
+    if (nxt) { card+='<div class="next-box">⏰ <strong>'+nxt+'</strong></div>'; }
+    card+='<div class="sched-label">Horários de Missa</div>';
+    card+='<div class="sched-list">'+rows+'</div>';
+    if (c.note) { card+='<div class="card-note">'+c.note+'</div>'; }
+    card+='<div class="card-acts">';
+    card+='<a class="btn-map" href="'+mapsLink(c)+'" target="_blank" rel="noopener">📍 Como Chegar</a>';
+    if (c.whatsapp) {
+      card+='<a class="btn-wpp-dot" href="'+whatsLink(c.whatsapp,c.name)+'" target="_blank"><img src=\"data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz48IS0tIFVwbG9hZGVkIHRvOiBTVkcgUmVwbywgd3d3LnN2Z3JlcG8uY29tLCBHZW5lcmF0b3I6IFNWRyBSZXBvIE1peGVyIFRvb2xzIC0tPgo8c3ZnIHdpZHRoPSI4MDBweCIgaGVpZ2h0PSI4MDBweCIgdmlld0JveD0iMCAwIDMyIDMyIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPg0KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xNiAzMUMyMy43MzIgMzEgMzAgMjQuNzMyIDMwIDE3QzMwIDkuMjY4MDEgMjMuNzMyIDMgMTYgM0M4LjI2ODAxIDMgMiA5LjI2ODAxIDIgMTdDMiAxOS41MTA5IDIuNjYxIDIxLjg2NzQgMy44MTg0NyAyMy45MDVMMiAzMUw5LjMxNDg2IDI5LjMwMzhDMTEuMzAxNCAzMC4zODU0IDEzLjU3ODkgMzEgMTYgMzFaTTE2IDI4Ljg0NjJDMjIuNTQyNSAyOC44NDYyIDI3Ljg0NjIgMjMuNTQyNSAyNy44NDYyIDE3QzI3Ljg0NjIgMTAuNDU3NiAyMi41NDI1IDUuMTUzODUgMTYgNS4xNTM4NUM5LjQ1NzU1IDUuMTUzODUgNC4xNTM4NSAxMC40NTc2IDQuMTUzODUgMTdDNC4xNTM4NSAxOS41MjYxIDQuOTQ0NSAyMS44Njc1IDYuMjkxODQgMjMuNzkwMkw1LjIzMDc3IDI3Ljc2OTJMOS4yNzk5MyAyNi43NTY5QzExLjE4OTQgMjguMDc0NiAxMy41MDQ2IDI4Ljg0NjIgMTYgMjguODQ2MloiIGZpbGw9IiNCRkM4RDAiLz4NCjxwYXRoIGQ9Ik0yOCAxNkMyOCAyMi42Mjc0IDIyLjYyNzQgMjggMTYgMjhDMTMuNDcyMiAyOCAxMS4xMjY5IDI3LjIxODQgOS4xOTI2NiAyNS44ODM3TDUuMDkwOTEgMjYuOTA5MUw2LjE2NTc2IDIyLjg3ODRDNC44MDA5MiAyMC45MzA3IDQgMTguNTU4OSA0IDE2QzQgOS4zNzI1OCA5LjM3MjU4IDQgMTYgNEMyMi42Mjc0IDQgMjggOS4zNzI1OCAyOCAxNloiIGZpbGw9InVybCgjcGFpbnQwX2xpbmVhcl84N183MjY0KSIvPg0KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xNiAzMEMyMy43MzIgMzAgMzAgMjMuNzMyIDMwIDE2QzMwIDguMjY4MDEgMjMuNzMyIDIgMTYgMkM4LjI2ODAxIDIgMiA4LjI2ODAxIDIgMTZDMiAxOC41MTA5IDIuNjYxIDIwLjg2NzQgMy44MTg0NyAyMi45MDVMMiAzMEw5LjMxNDg2IDI4LjMwMzhDMTEuMzAxNCAyOS4zODU0IDEzLjU3ODkgMzAgMTYgMzBaTTE2IDI3Ljg0NjJDMjIuNTQyNSAyNy44NDYyIDI3Ljg0NjIgMjIuNTQyNSAyNy44NDYyIDE2QzI3Ljg0NjIgOS40NTc1NSAyMi41NDI1IDQuMTUzODUgMTYgNC4xNTM4NUM5LjQ1NzU1IDQuMTUzODUgNC4xNTM4NSA5LjQ1NzU1IDQuMTUzODUgMTZDNC4xNTM4NSAxOC41MjYxIDQuOTQ0NSAyMC44Njc1IDYuMjkxODQgMjIuNzkwMkw1LjIzMDc3IDI2Ljc2OTJMOS4yNzk5MyAyNS43NTY5QzExLjE4OTQgMjcuMDc0NiAxMy41MDQ2IDI3Ljg0NjIgMTYgMjcuODQ2MloiIGZpbGw9IndoaXRlIi8+DQo8cGF0aCBkPSJNMTIuNSA5LjQ5OTg5QzEyLjE2NzIgOC44MzEzMSAxMS42NTY1IDguODkwNSAxMS4xNDA3IDguODkwNUMxMC4yMTg4IDguODkwNSA4Ljc4MTI1IDkuOTk0NzggOC43ODEyNSAxMi4wNUM4Ljc4MTI1IDEzLjczNDMgOS41MjM0NSAxNS41NzggMTIuMDI0NCAxOC4zMzYxQzE0LjQzOCAyMC45OTc5IDE3LjYwOTQgMjIuMzc0OCAyMC4yNDIyIDIyLjMyNzlDMjIuODc1IDIyLjI4MTEgMjMuNDE2NyAyMC4wMTU0IDIzLjQxNjcgMTkuMjUwM0MyMy40MTY3IDE4LjkxMTIgMjMuMjA2MiAxOC43NDIgMjMuMDYxMyAxOC42OTZDMjIuMTY0MSAxOC4yNjU0IDIwLjUwOTMgMTcuNDYzMSAyMC4xMzI4IDE3LjMxMjRDMTkuNzU2MyAxNy4xNjE3IDE5LjU1OTcgMTcuMzY1NiAxOS40Mzc1IDE3LjQ3NjVDMTkuMDk2MSAxNy44MDE4IDE4LjQxOTMgMTguNzYwOCAxOC4xODc1IDE4Ljk3NjVDMTcuOTU1OCAxOS4xOTIyIDE3LjYxMDMgMTkuMDgzIDE3LjQ2NjUgMTkuMDAxNUMxNi45Mzc0IDE4Ljc4OTIgMTUuNTAyOSAxOC4xNTExIDE0LjM1OTUgMTcuMDQyNkMxMi45NDUzIDE1LjY3MTggMTIuODYyMyAxNS4yMDAxIDEyLjU5NTkgMTQuNzgwM0MxMi4zODI4IDE0LjQ0NDQgMTIuNTM5MiAxNC4yMzg0IDEyLjYxNzIgMTQuMTQ4M0MxMi45MjE5IDEzLjc5NjggMTMuMzQyNiAxMy4yNTQgMTMuNTMxMyAxMi45ODQzQzEzLjcxOTkgMTIuNzE0NSAxMy41NzAyIDEyLjMwNSAxMy40ODAzIDEyLjA1QzEzLjA5MzggMTAuOTUzIDEyLjc2NjMgMTAuMDM0NyAxMi41IDkuNDk5ODlaIiBmaWxsPSJ3aGl0ZSIvPg0KPGRlZnM+DQo8bGluZWFyR3JhZGllbnQgaWQ9InBhaW50MF9saW5lYXJfODdfNzI2NCIgeDE9IjI2LjUiIHkxPSI3IiB4Mj0iNCIgeTI9IjI4IiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+DQo8c3RvcCBzdG9wLWNvbG9yPSIjNUJEMDY2Ii8+DQo8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiMyN0I0M0UiLz4NCjwvbGluZWFyR3JhZGllbnQ+DQo8L2RlZnM+DQo8L3N2Zz4=\" width=\"16\" height=\"16\" style=\"vertical-align:middle\"> WhatsApp</a>';
+    }
+    if (c.phone) {
+      card+='<a class="btn-tel" href="tel:'+c.phone+'">📞 Ligar</a>';
+    }
+    var sn=c.name.replace(/'/g,'');
+    card+='<button class="btn-report" onclick="openReport('+c.id+',&quot;'+sn+'&quot;)">Reportar erro</button>';
+    card+='</div></div></div>';
+    html+=card;
+  }
+  grid.innerHTML=html;
+
+  var cards=document.querySelectorAll('.card');
+  for (i=0;i<cards.length;i++) {
+    if (FIRST_RENDER) {
+      (function(el){ setTimeout(function(){ el.className+=' reveal'; }, 50); })(cards[i]);
+    } else { cards[i].className+=' reveal'; }
+  }
+}
+
+
+
+/* ─── CLOCK ─── */
+function updateClock() {
+  var now=getNow();
+  var t=now.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+  document.getElementById('hero-clock').textContent=t+' - '+DAYS[now.getDay()];
+  document.getElementById('nav-time').textContent=t;
+}
+
+/* ─── FILTERS ─── */
+function setFilter(f,btn) {
+  activeFilter=f;
+  var btns=document.querySelectorAll('.fbtn');
+  for (var i=0;i<btns.length;i++) { btns[i].className='fbtn'; }
+  btn.className='fbtn active';
+  render();
+}
+function onSearch() { searchQuery=document.getElementById('search').value; render(); }
+
+/* ─── MODAL ─── */
+function openReport(id,name) {
+  reportChurchId=id;
+  document.getElementById('report-church-name').textContent='Paróquia: '+name;
+  document.getElementById('report-form').style.display='grid';
+  document.getElementById('report-success').className='form-success';
+  document.getElementById('r-problem').value='';
+  document.getElementById('r-correct').value='';
+  document.getElementById('r-contact').value='';
+  document.getElementById('report-overlay').className='modal-overlay open';
+  document.body.style.overflow='hidden';
+}
+function closeModal(id) { document.getElementById(id).className='modal-overlay'; document.body.style.overflow=''; }
+document.getElementById('report-overlay').addEventListener('click',function(e){ if(e.target===this) closeModal('report-overlay'); });
+
+/* ─── FORMSPREE SUGGEST ─── */
+function submitSuggest() {
+  var name=document.getElementById('s-name').value.trim();
+  var sched=document.getElementById('s-sched').value.trim();
+  if (!name||!sched) { showToast('Preencha ao menos o nome e os horários.'); return; }
+  var btn=document.getElementById('btn-suggest');
+  btn.disabled=true; btn.innerHTML='<div class="spinner"></div> Enviando…';
+  var body=JSON.stringify({
+    _subject:'Missas CG - Nova sugestão: '+name,
+    paroquia:name, bairro:document.getElementById('s-bairro').value,
+    endereco:document.getElementById('s-addr').value,
+    whatsapp:document.getElementById('s-whats').value,
+    telefone:document.getElementById('s-tel').value,
+    horarios:sched, observacao:document.getElementById('s-obs').value
+  });
+  fetch('https://formspree.io/f/xeerbljd',{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:body})
+    .then(function(r){
+      if(r.ok){ document.getElementById('suggest-form').style.display='none'; document.getElementById('suggest-success').className='form-success show'; }
+      else throw new Error();
+    }).catch(function(){ showToast('Erro ao enviar. Tente novamente.'); btn.disabled=false; btn.textContent='Enviar Sugestão'; });
+}
+
+/* ─── FORMSPREE REPORT ─── */
+function submitReport() {
+  var problem=document.getElementById('r-problem').value;
+  if (!problem) { showToast('Selecione o tipo de problema.'); return; }
+  var church=null;
+  for (var i=0;i<CHURCHES.length;i++) { if(CHURCHES[i].id===reportChurchId){church=CHURCHES[i];break;} }
+  var btn=document.getElementById('btn-report-send');
+  btn.disabled=true; btn.innerHTML='<div class="spinner"></div> Enviando…';
+  var body=JSON.stringify({
+    _subject:'Missas CG - Reporte: '+(church?church.name:reportChurchId),
+    paroquia:church?church.name:String(reportChurchId),
+    problema:problem, correcao:document.getElementById('r-correct').value,
+    contato:document.getElementById('r-contact').value
+  });
+  fetch('https://formspree.io/f/xwvrdnkp',{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:body})
+    .then(function(r){
+      if(r.ok){
+        document.getElementById('report-form').style.display='none';
+        document.getElementById('report-success').className='form-success show';
+        setTimeout(function(){ closeModal('report-overlay'); },2800);
+      } else throw new Error();
+    }).catch(function(){ showToast('Erro ao enviar. Tente novamente.'); btn.disabled=false; btn.textContent='Enviar Reporte'; });
+}
+
+/* ─── SHARE ─── */
+document.getElementById('btn-share').addEventListener('click',function(){
+  try {
+    if (navigator&&navigator.share) { navigator.share({title:'Missas CG',text:'Horários de missa em Campo Grande MS.',url:location.href}); }
+    else { showToast('Copie o link do navegador para compartilhar!'); }
+  } catch(e) { showToast('Copie o link do navegador para compartilhar!'); }
+});
+
+/* ─── TOAST ─── */
+function showToast(msg) {
+  var t=document.getElementById('toast');
+  t.textContent=msg; t.className='toast show';
+  setTimeout(function(){ t.className='toast'; },3200);
+}
+
+/* ─── NAV SCROLL ─── */
+window.addEventListener('scroll',function(){
+  document.getElementById('nav').className=window.scrollY>50?'scrolled':'';
+},false);
+
+/* ─── PWA ─── */
+var dPrompt=null;
+window.addEventListener('beforeinstallprompt',function(e){
+  e.preventDefault(); dPrompt=e;
+  document.getElementById('install-banner').className='install-banner show';
+});
+document.getElementById('btn-inst').addEventListener('click',function(){
+  if (!dPrompt) return;
+  dPrompt.prompt();
+  dPrompt.userChoice.then(function(r){
+    if(r.outcome==='accepted') showToast('App instalado! Que Deus abençoe.');
+    dPrompt=null; document.getElementById('install-banner').className='install-banner';
+  });
+});
+document.getElementById('btn-dism').addEventListener('click',function(){
+  document.getElementById('install-banner').className='install-banner';
+});
+
+/* ─── INIT ─── */
+render();
+FIRST_RENDER=false;
+updateClock();
+setInterval(function(){ render(); updateClock(); },30000);
+</script>
+
+<!-- ════ CARLO — ASSISTENTE VIRTUAL ════ -->
+<style>
+.carlo-btn {
+  position:fixed; bottom:1.6rem; right:1.4rem; z-index:300;
+  width:60px; height:60px; border-radius:50%;
+  border:3px solid var(--gold); background:var(--navy-dark);
+  cursor:pointer; padding:0; overflow:visible;
+  transition:transform .2s;
+  animation:carlo-glow 3s ease-in-out infinite;
+}
+@keyframes carlo-glow {
+  0%,100%{box-shadow:0 4px 20px rgba(26,42,108,.4),0 0 0 0 rgba(183,148,85,.5)}
+  50%    {box-shadow:0 4px 20px rgba(26,42,108,.4),0 0 0 10px rgba(183,148,85,.0)}
+}
+.carlo-btn:hover { transform:scale(1.08); }
+.carlo-initials {
+  width:100%; height:100%; border-radius:50%;
+  background:linear-gradient(135deg,var(--navy-mid),var(--navy-lt));
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Cinzel',serif; font-size:1rem; font-weight:700; color:var(--gold);
+}
+.carlo-badge {
+  position:absolute; top:-4px; right:-4px;
+  width:20px; height:20px; border-radius:50%;
+  background:#4ade80; border:2px solid var(--ivory);
+  display:flex; align-items:center; justify-content:center;
+  font-size:.6rem; color:#fff; font-weight:800;
+}
+
+.carlo-win {
+  position:fixed; bottom:5.8rem; right:1.4rem; z-index:299;
+  width:340px; max-width:calc(100vw - 2rem);
+  background:var(--ivory); border-radius:var(--r);
+  box-shadow:var(--sh-lg); border:1px solid var(--ivory-dim);
+  display:flex; flex-direction:column; max-height:500px; overflow:hidden;
+  opacity:0; pointer-events:none;
+  transform:translateY(14px) scale(.96);
+  transition:opacity .28s, transform .28s;
+}
+.carlo-win.open { opacity:1; pointer-events:all; transform:translateY(0) scale(1); }
+@media(prefers-color-scheme:dark){
+  .carlo-win { background:var(--ivory-dim); border-color:rgba(255,255,255,.07); }
+}
+
+.carlo-head {
+  display:flex; align-items:center; gap:.7rem;
+  padding:.85rem 1rem;
+  background:var(--navy); border-radius:var(--r) var(--r) 0 0; flex-shrink:0;
+}
+.carlo-av {
+  width:40px; height:40px; border-radius:50%;
+  border:2px solid var(--gold); flex-shrink:0;
+  background:var(--navy-mid); display:flex; align-items:center; justify-content:center;
+  font-family:'Cinzel',serif; font-size:.9rem; font-weight:700; color:var(--gold);
+}
+.carlo-nm { font-family:'Cinzel',serif; font-size:.82rem; font-weight:700; color:var(--gold); }
+.carlo-st {
+  font-size:.65rem; color:rgba(253,252,249,.55);
+  display:flex; align-items:center; gap:.3rem; margin-top:.1rem;
+}
+.carlo-st-dot { width:6px; height:6px; border-radius:50%; background:#4ade80; }
+.carlo-x {
+  margin-left:auto; background:none; border:none;
+  color:rgba(253,252,249,.4); cursor:pointer; font-size:1.1rem;
+  padding:.2rem; transition:color .2s;
+}
+.carlo-x:hover { color:var(--gold); }
+
+.carlo-msgs {
+  flex:1; overflow-y:auto; padding:.85rem 1rem;
+  display:flex; flex-direction:column; gap:.6rem; scroll-behavior:smooth;
+}
+.carlo-msgs::-webkit-scrollbar { width:3px; }
+.carlo-msgs::-webkit-scrollbar-thumb { background:var(--ivory-dim); border-radius:2px; }
+
+.cmsg { display:flex; gap:.45rem; align-items:flex-end; }
+.cmsg.u { flex-direction:row-reverse; }
+.cmsg-av {
+  width:26px; height:26px; border-radius:50%; flex-shrink:0;
+  background:var(--navy); display:flex; align-items:center; justify-content:center;
+  font-size:.62rem; font-family:'Cinzel',serif; color:var(--gold); font-weight:700;
+}
+.cmsg-b {
+  max-width:82%; padding:.52rem .78rem;
+  border-radius:12px 12px 12px 2px;
+  font-size:.77rem; line-height:1.65; color:var(--text);
+  background:var(--ivory-dim);
+}
+.cmsg.u .cmsg-b {
+  background:var(--navy); color:var(--ivory);
+  border-radius:12px 12px 2px 12px;
+}
+@media(prefers-color-scheme:dark){ .cmsg-b { background:rgba(255,255,255,.09); } }
+
+.carlo-typing { display:none; align-items:center; gap:.45rem; padding:.3rem 1rem .5rem; flex-shrink:0; }
+.carlo-typing.show { display:flex; }
+.td { width:7px; height:7px; border-radius:50%; background:var(--muted); animation:tdot .9s ease-in-out infinite; }
+.td:nth-child(2){animation-delay:.18s} .td:nth-child(3){animation-delay:.36s}
+@keyframes tdot{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-5px)}}
+
+.carlo-sug {
+  padding:.5rem 1rem .75rem;
+  display:flex; flex-wrap:wrap; gap:.38rem;
+  border-top:1px solid var(--ivory-dim); flex-shrink:0;
+}
+@media(prefers-color-scheme:dark){ .carlo-sug { border-top-color:rgba(255,255,255,.06); } }
+.csb {
+  padding:.28rem .68rem; border-radius:50px;
+  border:1px solid rgba(183,148,85,.32); background:transparent;
+  color:var(--gold); font-family:'Poppins',sans-serif;
+  font-size:.67rem; font-weight:500; cursor:pointer; transition:all .18s; text-align:left;
+}
+.csb:hover { background:var(--gold); color:var(--navy-dark); border-color:var(--gold); }
+.csb:disabled { opacity:.4; cursor:default; }
+</style>
+
+<!-- Botão flutuante -->
+<button class="carlo-btn" id="carlo-btn" aria-label="Assistente sobre a Missa" onclick="cToggle()">
+  <img src="data:image/jpeg;base64,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" style="width:100%;height:100%;border-radius:50%;object-fit:cover;object-position:top center" alt="Santo Carlo Acutis">
+  <span class="carlo-badge">✦</span>
+</button>
+
+<!-- Janela do chat -->
+<div class="carlo-win" id="carlo-win">
+  <div class="carlo-head">
+    <div class="carlo-av" style="overflow:hidden;padding:0"><img src="data:image/jpeg;base64,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" style="width:100%;height:100%;border-radius:50%;object-fit:cover;object-position:top center" alt="Carlo"></div>
+    <div>
+      <div class="carlo-nm">Carlo — Assistente</div>
+      <div class="carlo-st"><span class="carlo-st-dot"></span>Online agora</div>
+    </div>
+    <button class="carlo-x" onclick="cToggle()" aria-label="Fechar">✕</button>
+  </div>
+  <div class="carlo-msgs" id="carlo-msgs"></div>
+  <div class="carlo-typing" id="carlo-typing">
+    <div class="cmsg-av" style="overflow:hidden;padding:0"><img src="data:image/jpeg;base64,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" style="width:100%;height:100%;border-radius:50%;object-fit:cover;object-position:top center" alt="Carlo"></div>
+    <div style="display:flex;gap:4px;padding:.4rem .6rem;background:var(--ivory-dim);border-radius:12px">
+      <div class="td"></div><div class="td"></div><div class="td"></div>
+    </div>
+  </div>
+  <div class="carlo-sug" id="carlo-sug"></div>
+</div>
+
+<script>
+/* ─── CARLO ─── */
+var C_OPEN = false, C_STARTED = false;
+
+var C_SUGG = [
+  'O que é a Missa?',
+  'Como surgiu a Missa?',
+  'A Instituição da Eucaristia',
+  'Estado de graça para comungar',
+  'Preciso me confessar',
+  'Quem é Carlo?'
+];
+
+var C_QA = [
+  /* ── O QUE É A MISSA ── */
+  { t:['o que é','o que e','que é a missa','que e a missa','significado','importância','importancia'], a:function(){
+    return '<strong>O que é a Santa Missa?</strong><br><br>' +
+      'A Santa Missa é o centro e o coração de toda a vida cristã. Ela não é apenas uma oração bonita ou uma reunião de fiéis — é a renovação incruenta do sacrifício de Cristo na Cruz.<br><br>' +
+      'Cada vez que você participa da Missa, o Calvário se torna presente. O mesmo Cristo que morreu e ressuscitou oferece-Se ao Pai pelo seu amor.<br><br>' +
+      '<em>"A Missa é o Sol do mundo espiritual. Sem ela, tudo seria trevas."</em> — São Padre Pio<br><br>' +
+      'Na Missa temos quatro fins essenciais:<br>' +
+      '✝ <strong>Adoração</strong> — glorificamos a Deus<br>' +
+      '✝ <strong>Reparação</strong> — pedimos perdão pelos pecados<br>' +
+      '✝ <strong>Ação de graças</strong> — agradecemos as bênçãos<br>' +
+      '✝ <strong>Impetração</strong> — pedimos graças e auxílios<br><br>' +
+      'Nenhuma oração, jejum ou penitência tem o valor de uma única Missa bem participada. 🙏';
+  }},
+
+  /* ── COMO SURGIU ── */
+  { t:['como surgiu','origem','história','historia','quando começou','quando comecou','primeira missa'], a:function(){
+    return '<strong>Como Surgiu a Missa?</strong><br><br>' +
+      'A Missa tem sua origem na <strong>Última Ceia</strong>, na noite de quinta-feira santa, quando Jesus reuniu os Doze Apóstolos em Jerusalém.<br><br>' +
+      'Naquele cenáculo, Ele tomou o pão, abençoou, partiu e disse: <em>"Tomai e comei: isto é o Meu Corpo."</em> Depois tomou o cálice e disse: <em>"Isto é o Meu Sangue... Fazei isso em memória de Mim."</em> (Lc 22, 19-20)<br><br>' +
+      'Com essas palavras, Jesus instituiu a Eucaristia e o Sacerdócio, e ordenou que os Apóstolos repetissem esse gesto até o fim dos tempos.<br><br>' +
+      'Nas primeiras comunidades cristãs, a Missa era celebrada no "Dia do Senhor" — o domingo — seguindo o rito descrito na <em>Didaqué</em> (séc. I) e nas cartas de Santo Inácio de Antioquia.<br><br>' +
+      'Ao longo dos séculos, a liturgia foi sendo enriquecida e codificada, chegando à forma que conhecemos hoje — mas o coração é sempre o mesmo: Cristo oferecendo-Se ao Pai por nós. 🙏';
+  }},
+
+  /* ── INSTITUIÇÃO DA EUCARISTIA ── */
+  { t:['eucaristia','instituição','instituicao','ultima ceia','última ceia','corpo de cristo','sangue','transsubstanciação','transsubstanciacao','hóstia','hostia'], a:function(){
+    return '<strong>A Instituição da Eucaristia</strong><br><br>' +
+      'Na noite antes de Sua Paixão, Jesus realizou o gesto mais sublime da história:<br><br>' +
+      '<em>"Enquanto comiam, Jesus tomou o pão, abençoou-o, partiu-o e deu-o aos discípulos, dizendo: Tomai e comei; isto é o Meu Corpo. Depois tomou o cálice, deu graças e deu-o a eles, dizendo: Bebei dele todos; porque isto é o Meu Sangue..."</em> (Mt 26, 26-28)<br><br>' +
+      'A Igreja ensina que nesse momento ocorre a <strong>Transubstanciação</strong>: o pão e o vinho se convertem verdadeiramente no Corpo e Sangue, Alma e Divindade de Jesus Cristo — não simbolicamente, mas de forma real e substancial.<br><br>' +
+      'Por isso o Catecismo afirma: <em>"A Eucaristia é a fonte e o ápice de toda a vida cristã."</em> (CIC 1324)<br><br>' +
+      'Ao receber a Comunhão, você não recebe um símbolo — você recebe o próprio Jesus. 🙏';
+  }},
+
+  /* ── ESTADO DE GRAÇA ── */
+  { t:['estado de graça','estado de graca','comungar','comunhão','comunhao','pode comungar','posso comungar','graça','graca','pecado mortal'], a:function(){
+    return '<strong>Estado de Graça para Comungar</strong><br><br>' +
+      'Para receber a Sagrada Comunhão com fruto, é <strong>indispensável estar em estado de graça</strong> — ou seja, sem pecado mortal na alma.<br><br>' +
+      'São Paulo nos adverte com firmeza:<br>' +
+      '<em>"Quem comer o pão ou beber o cálice do Senhor indignamente será réu do Corpo e Sangue do Senhor."</em> (1 Cor 11, 27)<br><br>' +
+      '<strong>O que é pecado mortal?</strong><br>' +
+      'É um pecado grave, praticado com pleno conhecimento e livre consentimento, que rompe a amizade com Deus.<br><br>' +
+      '<strong>O que fazer?</strong><br>' +
+      '✝ Se você tem consciência de pecado mortal, <strong>não comunga antes de se confessar</strong>.<br>' +
+      '✝ Participe da Missa com atenção e devoção — isso já é um ato de adoração a Deus.<br>' +
+      '✝ Procure um sacerdote para a Confissão o mais breve possível.<br><br>' +
+      'A Igreja, em sua misericórdia, disponibiliza o Sacramento da Reconciliação exatamente para isso: restaurar a amizade com Deus e devolver ao fiel a alegria de se aproximar da mesa eucarística. 🙏';
+  }},
+
+  /* ── PRECISO ME CONFESSAR ── */
+  { t:['confessar','confissão','confissao','reconciliação','reconciliacao','pecados','absolvição','absolvicao','onde me confessar','horario confissao'], a:function(){
+    return '<strong>Precisa se Confessar?</strong><br><br>' +
+      'O Sacramento da Reconciliação é o abraço do Pai ao filho pródigo que retorna. Não há pecado que Deus não possa perdoar a quem se arrepende com sinceridade.<br><br>' +
+      '<em>"O Senhor não se cansa de perdoar. Somos nós que nos cansamos de pedir perdão."</em> — Papa Francisco<br><br>' +
+      'Para encontrar horários de confissão nas paróquias de Campo Grande, acesse o <strong>Misericórdia CG</strong> — um localizador em tempo real de confissões na nossa cidade:<br><br>' +
+      '<a href="https://miseric-rdia-cg-production.up.railway.app/" target="_blank" style="display:inline-block;margin-top:.3rem;padding:.45rem 1rem;background:var(--navy);color:var(--ivory);border-radius:6px;text-decoration:none;font-size:.8rem;font-weight:600">🕊 Abrir Misericórdia CG</a><br><br>' +
+      'Lá você encontra quais paróquias estão com confissão aberta agora, o endereço e como chegar. 🙏';
+  }},
+
+  /* ── QUEM É CARLO ── */
+  { t:['carlo','quem é','quem e','assistente','sobre','desenvolvedor','george','criador'], a:function(){
+    return '<strong>Sobre o Carlo</strong><br><br>' +
+      'Sou o <strong>Carlo</strong>, assistente espiritual do <strong>Missas CG</strong>, inspirado no beato Carlo Acutis.<br><br>' +
+      'Carlo Acutis foi um jovem italiano que viveu a fé com intensidade e usou a tecnologia para anunciar os milagres eucarísticos ao mundo. Faleceu em 2006 com apenas 15 anos e foi canonizado em 27 de abril de 2025.<br><br>' +
+      '<em>"A Eucaristia é a minha rodovia para o Céu."</em><br>' +
+      '<em>"Todos nascemos originais, mas muitos morrem cópias."</em><br>' +
+      '— Santo Carlo Acutis<br><br>' +
+      '<strong>Missas CG</strong> foi desenvolvido por <strong>George Emannuel</strong>, estudante de Ciência da Computação em Campo Grande, como serviço voluntário à Arquidiocese — para que nenhum fiel deixe de encontrar a Santa Missa por falta de informação. 🙏';
+  }}
+];
+
+function cToggle() {
+  C_OPEN = !C_OPEN;
+  document.getElementById('carlo-win').className = C_OPEN ? 'carlo-win open' : 'carlo-win';
+  if (C_OPEN && !C_STARTED) { cInit(); C_STARTED = true; }
+}
+
+function cInit() {
+  var w = document.getElementById('carlo-sug'), h = '', i;
+  for (i = 0; i < C_SUGG.length; i++) {
+    h += '<button class="csb" onclick="cSugg(this,' + i + ')">' + C_SUGG[i] + '</button>';
+  }
+  w.innerHTML = h;
+  setTimeout(function() {
+    cAdd('c',
+      'Paz e bem! Sou o <strong>Carlo</strong>, seu guia espiritual no Missas CG. 🙏<br><br>' +
+      'Posso te ajudar com:<br>' +
+      '✝ A importância da Santa Missa<br>' +
+      '✝ Como surgiu a Missa<br>' +
+      '✝ A Instituição da Eucaristia<br>' +
+      '✝ Estado de graça para comungar<br>' +
+      '🕊 Onde me confessar<br><br>' +
+      'Escolha uma opção abaixo ou me faça uma pergunta!'
+    );
+  }, 400);
+}
+
+function cSugg(btn, idx) {
+  btn.disabled = true;
+  cAdd('u', C_SUGG[idx]);
+  cProcess(C_SUGG[idx]);
+}
+
+function cNorm(s) {
+  return s.toLowerCase()
+    .replace(/[áàãâ]/g,'a').replace(/[éèê]/g,'e').replace(/[íì]/g,'i')
+    .replace(/[óòõô]/g,'o').replace(/[úù]/g,'u').replace(/ç/g,'c');
+}
+
+function cProcess(text) {
+  document.getElementById('carlo-typing').className = 'carlo-typing show';
+  var low = cNorm(text), ans = null, i, j;
+  for (i = 0; i < C_QA.length; i++) {
+    for (j = 0; j < C_QA[i].t.length; j++) {
+      if (low.indexOf(cNorm(C_QA[i].t[j])) !== -1) { ans = C_QA[i].a(); break; }
+    }
+    if (ans) break;
+  }
+  if (!ans) ans = 'Não tenho certeza sobre isso, mas role a página para encontrar os horários de missa mais perto de você! 🙏';
+  setTimeout(function() {
+    document.getElementById('carlo-typing').className = 'carlo-typing';
+    cAdd('c', ans);
+  }, 900);
+}
+
+function cAdd(from, html) {
+  var w = document.getElementById('carlo-msgs'), isU = (from === 'u');
+  var d = document.createElement('div');
+  d.className = 'cmsg' + (isU ? ' u' : '');
+  var av = isU
+    ? '<div class="cmsg-av">Eu</div>'
+    : '<div class="cmsg-av" style="overflow:hidden;padding:0"><img src=\"data:image/jpeg;base64,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\" style=\"width:100%;height:100%;border-radius:50%;object-fit:cover;object-position:top center\" alt=\"Carlo\"></div>';
+  d.innerHTML = av + '<div class="cmsg-b">' + html + '</div>';
+  w.appendChild(d);
+  w.scrollTop = w.scrollHeight;
+}
+</script>
+</body>
+</html>

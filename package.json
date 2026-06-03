@@ -1,0 +1,15 @@
+{
+  "name": "missas-cg",
+  "version": "1.0.0",
+  "description": "Horários de Missa — Arquidiocese de Campo Grande MS",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}
