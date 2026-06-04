@@ -1,13 +1,19 @@
-const express = require('express');
+const http = require('http');
+const fs   = require('fs');
 const path = require('path');
-const app = express();
+
 const PORT = process.env.PORT || 3000;
- 
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
+
+http.createServer((req, res) => {
+  fs.readFile(path.join(__dirname, 'index.html'), (err, data) => {
+    if (err) {
+      res.writeHead(500);
+      res.end('Erro ao carregar o site.');
+      return;
+    }
+    res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+    res.end(data);
+  });
+}).listen(PORT, '0.0.0.0', () => {
+  console.log('Missas CG rodando na porta ' + PORT);
 });
- 
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Missas CG rodando na porta ${PORT}`);
-});
- 
