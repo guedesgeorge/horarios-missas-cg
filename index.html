@@ -891,7 +891,7 @@ var CHURCHES = [
   {
     id:12, name:'PARÓQUIA IMACULADO CORAÇÃO DE MARIA',
     nb:'norte', addr:'Av. Hiroshima, 1233 - Carandá Bosque, Campo Grande - MS, 79032-050',
-    phone:'(67)  2525-8187', whatsapp:'55679209616067983369636796200868',
+    phone:'(67) 2525-8187', whatsapp:'55679209616067983369636796200868',
     lat:-20.4356935, lng:-54.5671447,
     mapsUrl:'https://www.google.com/maps/place/?q=place_id:ChIJQwMCt__ohpQRVdCK0FfpHTI',
     note:'',
@@ -932,7 +932,7 @@ var CHURCHES = [
   {
     id:15, name:'PARÓQUIA MARIA MÃE DA IGREJA',
     nb:'sul', addr:'R. Felipe Calarge, 723 - Jardim Leblon, Campo Grande - MS, 79092-080',
-    phone:'(67)3204-1969', whatsapp:'5567998525634',
+    phone:'(67) 3204-1969', whatsapp:'5567998525634',
     lat:-20.4960804, lng:-54.6583519,
     mapsUrl:'https://www.google.com/maps/place/?q=place_id:ChIJC5k3BSrkhpQRvx1TvLyb8ac',
     note:'',
@@ -1104,7 +1104,7 @@ var CHURCHES = [
   {
     id:27, name:'PARÓQUIA SAGRADOS CORAÇÕES DE JESUS E MARIA',
     nb:'sul', addr:'R. Pôrto Rico, 734 - Vila Sao Jorge da Lagoa, Campo Grande - MS, 79095-010',
-    phone:'(67) 3056-1813', whatsapp:'5567991683947',
+    phone:'(67) 3317-4865', whatsapp:'5567991683947',
     lat:-20.5232549, lng:-54.6661612,
     mapsUrl:'https://www.google.com/maps/place/?q=place_id:ChIJ4cUM2UXkhpQRD1RPMO0cndg',
     note:'',
@@ -1171,7 +1171,7 @@ var CHURCHES = [
   {
     id:32, name:'PARÓQUIA SANTA RITA DE CÁSSIA – MUNICÍPIO DE JARAGUARI',
     nb:'interior', addr:'Gonçalves Luiz Martins, s/n - Centro, Jaraguari - MS, 79440-000',
-    phone:'+55 67 3285-1153', whatsapp:'5567991376831',
+    phone:'(67) 3317-4979', whatsapp:'5567991376831',
     lat:-20.1010625, lng:-54.4360168,
     mapsUrl:'https://www.google.com/maps/place/?q=place_id:ChIJq6qqqqq-hpQRvAUXbkvRehE',
     note:'',
@@ -1458,7 +1458,7 @@ var CHURCHES = [
   {
     id:53, name:'PARÓQUIA SÃO SEBASTIÃO',
     nb:'norte', addr:'R. Minas Gerais, 549 - Monte Carlo, Campo Grande - MS, 79022-280',
-    phone:'(67) 3317-4863', whatsapp:'5567992784217',
+    phone:'(67) 3026-4863', whatsapp:'5567992784217',
     lat:-20.4381396, lng:-54.591639,
     mapsUrl:'https://www.google.com/maps/place/?q=place_id:ChIJWQDR6GHohpQRyIWZDi7rXHA',
     note:'',
@@ -1491,6 +1491,7 @@ function getNow() {
   return new Date(new Date().toLocaleString('en-US', {timeZone: TZ}));
 }
 function toMin(t) { var p=t.split(':'); return parseInt(p[0])*60+parseInt(p[1]); }
+
 
 function temMissaProxima(c, now) {
   // Retorna true se a paróquia tem missa nas próximas 3 horas (hoje ou amanhã cedo)
@@ -1610,7 +1611,7 @@ function render() {
   var filtered = [];
   for (i=0;i<list.length;i++) {
     c=list[i];
-    if (activeFilter==='proximas' && !temMissaProxima(c, now)) continue;
+    if (activeFilter==='proximas' && !temMissaProxima(c, now))    continue;
     if (activeFilter==='aberta'   && !c.hoje)              continue;
     if (activeFilter==='centro'   && c.nb!=='centro')       continue;
     if (activeFilter==='outros'   && c.nb!=='outros')       continue;
