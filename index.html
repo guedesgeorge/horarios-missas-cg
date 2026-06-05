@@ -363,6 +363,14 @@
       transition:background .2s, transform .15s; flex-shrink:0;
     }
     .btn-wpp-dot:hover { background:#1ebe5d; transform:translateY(-1px); }
+    .btn-share-card {
+      display:inline-flex; align-items:center; justify-content:center;
+      padding:.5rem 1rem; background:#25d366; color:#fff;
+      border:none; border-radius:6px; cursor:pointer;
+      font-family:'Poppins',sans-serif; font-size:.74rem; font-weight:500;
+      transition:background .2s, transform .15s;
+    }
+    .btn-share-card:hover { background:#1ebe5d; transform:translateY(-1px); }
     .btn-report {
       display:inline-flex; align-items:center; gap:.38rem;
       padding:.42rem .8rem; background:transparent; color:var(--soft);
@@ -571,10 +579,6 @@
     <button class="fbtn" onclick="setFilter('proximas',this)">Próximas Missas</button>
     <button class="fbtn" onclick="setFilter('aberta',this)">Com Missa Hoje</button>
     <button class="fbtn" onclick="setFilter('centro',this)">Centro</button>
-    <button class="fbtn" onclick="setFilter('norte',this)">Norte</button>
-    <button class="fbtn" onclick="setFilter('sul',this)">Sul</button>
-    <button class="fbtn" onclick="setFilter('leste',this)">Leste</button>
-    <button class="fbtn" onclick="setFilter('oeste',this)">Oeste</button>
     
     <button class="fbtn" onclick="setFilter('interior',this)">Interior</button>
   </div>
@@ -811,7 +815,7 @@ var CHURCHES = [
   {
     id:6, name:'PARÓQUIA CRISTO BOM PASTOR',
     nb:'sul', addr:'R. Paulo Hideo Katayama, 651 - Parque Res. Uniao, Campo Grande - MS, 79091-430',
-    phone:'(67) 3317-6960', whatsapp:'5567999321773',
+    phone:'(67) 3317-6960', whatsapp:'',
     lat:-20.4812356, lng:-54.6646857,
     mapsUrl:'https://www.google.com/maps/place/?q=place_id:ChIJF9f5BZLmhpQRTr8X95yLE0k',
     note:'',
@@ -1171,7 +1175,7 @@ var CHURCHES = [
   {
     id:32, name:'PARÓQUIA SANTA RITA DE CÁSSIA – MUNICÍPIO DE JARAGUARI',
     nb:'interior', addr:'Gonçalves Luiz Martins, s/n - Centro, Jaraguari - MS, 79440-000',
-    phone:'(67) 3317-4979', whatsapp:'5567991376831',
+    phone:'(67) 3317-4979', whatsapp:'',
     lat:-20.1010625, lng:-54.4360168,
     mapsUrl:'https://www.google.com/maps/place/?q=place_id:ChIJq6qqqqq-hpQRvAUXbkvRehE',
     note:'',
@@ -1183,7 +1187,7 @@ var CHURCHES = [
   {
     id:33, name:'PARÓQUIA SANTO AFONSO MARIA DE LIGÓRIO',
     nb:'oeste', addr:'R. Alberto Tôrres, 595 - Vila Serradinho, Campo Grande - MS, 79104-020',
-    phone:'(67)3391-7287', whatsapp:'5567991277799',
+    phone:'(67)3391-7287', whatsapp:'',
     lat:-20.4561832, lng:-54.6836279,
     mapsUrl:'https://www.google.com/maps/place/?q=place_id:ChIJJ8apYCbnhpQRZu2L0R794FM',
     note:'',
@@ -1641,7 +1645,7 @@ function render() {
   html='';
   for (i=0;i<filtered.length;i++) {
     c=filtered[i];
-    nxt=!c.hoje ? proximaMissa(c, now) : null;
+    nxt=proximaMissa(c, now);
 
     rows='';
     for (j=0;j<c.s.length;j++) {
@@ -1678,6 +1682,7 @@ function render() {
     if (c.phone) {
       card+='<a class="btn-tel" href="tel:'+c.phone+'"><img src=\"data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pg0KPCEtLSBVcGxvYWRlZCB0bzogU1ZHIFJlcG8sIHd3dy5zdmdyZXBvLmNvbSwgR2VuZXJhdG9yOiBTVkcgUmVwbyBNaXhlciBUb29scyAtLT4NCjxzdmcgZmlsbD0iIzAwMDAwMCIgaGVpZ2h0PSI4MDBweCIgd2lkdGg9IjgwMHB4IiB2ZXJzaW9uPSIxLjEiIGlkPSJMYXllcl8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiANCgkgdmlld0JveD0iMCAwIDUxMi4xMDcgNTEyLjEwNyIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+DQo8Zz4NCgk8Zz4NCgkJPHBhdGggZD0iTTI1NiwwLjA1M2MtMTQxLjEyLDAtMjU2LDExNC44OC0yNTYsMjU2czExNC44OCwyNTYsMjU1Ljg5MywyNTZoMi43NzNjMTAxLjk3MywwLDEzNy4zODctNDYuODI3LDE0NS44MTMtNjEuMzMzDQoJCQljOS40OTMtMTYuMzIsMTEuMDkzLTMzLjI4LDQuMTYtNDUuNDRjLTQuMDUzLTYuOTMzLTEwLjY2Ny0xMS44NC0xOC40NTMtMTMuNzZsNC40OC00LjQ4YzE0LjI5My0xNC4yOTMsMTQuMTg3LTM3LjQ0LTAuMTA3LTUxLjczMw0KCQkJYy0xLjA2Ny0xLjA2Ny0yLjEzMy0yLjAyNy0zLjMwNy0yLjk4N2wtNDMuMDkzLTMzLjZjLTEzLjIyNy0xMC4zNDctMzEuODkzLTEwLjM0Ny00NS4wMTMsMC4xMDdsLTkuNiw3LjU3Mw0KCQkJYy01Ljk3Myw0LjgtMTQuNjEzLDQuMjY3LTIwLjA1My0xLjE3M0wxOTYuNDgsMjI4Yy01LjQ0LTUuNDQtNS45NzMtMTQuMTg3LTEuMTczLTIwLjE2bDcuNTczLTkuNg0KCQkJYzEwLjQ1My0xMy4yMjcsMTAuNTYtMzEuNzg3LDAuMjEzLTQ1LjEybC0zMy40OTMtNDMuMmMtNi40LTguMjEzLTE2LjEwNy0xMy4zMzMtMjYuNTYtMTMuOTczDQoJCQljLTEwLjQ1My0wLjY0LTIwLjY5MywzLjItMjguMDUzLDEwLjY2N2wtMjcuNTIsMjcuNTJjLTE1Ljg5MywxNi0zOS4zNiw2Ni43NzMsODYuODI3LDE5My4yOA0KCQkJQzI1Niw0MDkuMzMzLDMwNi4yNCw0MjYuNTA3LDMzNC4wOCw0MjYuNTA3YzE3LjQ5MywwLDI3LjYyNy02LjUwNywzMy4xNzMtMTIuMDUzbDUuOTczLTUuOTczYzEuOTIsMS44MTMsNC40OCwyLjc3Myw3LjE0NywyLjg4DQoJCQljNC45MDcsMCw4LjIxMywxLjQ5Myw5LjkyLDQuNDhjMi4yNCw0LjA1MywyLjY2NywxMi42OTMtNC4wNTMsMjQuMTA3Yy0xNC42MTMsMjQuOTYtNTYuMjEzLDUxLjUyLTEzMC4xMzMsNTAuNjY3DQoJCQljLTEyOS4zODcsMC0yMzQuNjY3LTEwNS4yOC0yMzQuNjY3LTIzNC42NjdTMTI2LjYxMywyMS4zODcsMjU2LDIxLjM4N3MyMzQuNjY3LDEwNS4yOCwyMzQuNjY3LDIzNC42NjcNCgkJCWMwLDQzLjA5My0xMS44NCw4NS4yMjctMzQuMTMzLDEyMi4wMjdjLTMuMzA3LDQuOTA3LTIuMTMzLDExLjUyLDIuNzczLDE0LjgyN2M0LjkwNywzLjMwNywxMS41MiwyLjEzMywxNC44MjctMi43NzMNCgkJCWMwLjIxMy0wLjMyLDAuNDI3LTAuNjQsMC42NC0wLjk2YzI0LjQyNy00MC4xMDcsMzcuMzMzLTg2LjE4NywzNy4zMzMtMTMzLjEyQzUxMiwxMTQuOTMzLDM5Ny4xMiwwLjA1MywyNTYsMC4wNTN6DQoJCQkgTTM4MC41ODcsMzcwLjcyYy0wLjMyLDAuNDI3LTAuNzQ3LDAuOTYtMS4xNzMsMS4zODdMMzUyLDM5OS42MjdjLTMuNzMzLDMuNzMzLTEwLjEzMyw1Ljc2LTE4LjAyNyw1Ljc2DQoJCQljLTE5LjQxMywwLTY0LjEwNy0xMi4wNTMtMTQ0LjY0LTkyLjhjLTEyMS4yOC0xMjEuNi05MC42NjctMTU5LjI1My04Ni44MjctMTYzLjJsMjcuNTItMjcuNTJjMi43NzMtMi44OCw2LjYxMy00LjQ4LDEwLjY2Ny00LjQ4DQoJCQloMC45NmM0LjM3MywwLjIxMyw4LjQyNywyLjM0NywxMC45ODcsNS44NjdsMzMuNDkzLDQzLjJjNC4yNjcsNS41NDcsNC4yNjcsMTMuMzMzLTAuMTA3LDE4Ljc3M2wtNy41NzMsOS42DQoJCQljLTExLjQxMywxNC41MDctMTAuMjQsMzUuMzA3LDIuNzczLDQ4LjQyN2w3Ny4wMTMsNzcuMjI3YzEzLjEyLDEzLjEyLDMzLjkyLDE0LjI5Myw0OC40MjcsMi44OGw5LjYtNy41NzMNCgkJCWM1LjQ0LTQuMzczLDEzLjIyNy00LjM3MywxOC42NjctMC4xMDdsNDMuMDkzLDMzLjZDMzg0LjY0LDM1NC41MDcsMzg1LjgxMywzNjQuMTA3LDM4MC41ODcsMzcwLjcyeiIvPg0KCTwvZz4NCjwvZz4NCjwvc3ZnPg==\" width=\"16\" height=\"16\" style=\";vertical-align:middle;margin-right:4px\"> Ligar</a>';
     }
+    card+='<button class="btn-share-card" onclick="compartilhar('+c.id+')">📲 Compartilhar</button>';
     var sn=c.name.replace(/'/g,'');
     card+='<button class="btn-report" onclick="openReport('+c.id+',&quot;'+sn+'&quot;)">Reportar erro</button>';
     card+='</div></div></div>';
@@ -1727,6 +1732,28 @@ function openReport(id,name) {
 }
 function closeModal(id) { document.getElementById(id).className='modal-overlay'; document.body.style.overflow=''; }
 document.getElementById('report-overlay').addEventListener('click',function(e){ if(e.target===this) closeModal('report-overlay'); });
+
+/* ─── COMPARTILHAR ─── */
+function compartilhar(id) {
+  var c = null;
+  for (var i=0;i<CHURCHES.length;i++) { if (CHURCHES[i].id===id) { c=CHURCHES[i]; break; } }
+  if (!c) return;
+  var now = getNow();
+  var prox = proximaMissa(c, now) || '';
+  var txt = '⛪ ' + c.name + '\n📍 ' + c.addr + '\n';
+  if (prox) txt += '🕐 ' + prox + '\n';
+  txt += '\nVeja todos os horários de missa em Campo Grande:\n' + location.href;
+  if (navigator.share) {
+    navigator.share({ title: c.name, text: txt }).catch(function(){});
+  } else {
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(txt);
+      showToast('Informações copiadas!');
+    } else {
+      showToast('Copie o link do navegador para compartilhar.');
+    }
+  }
+}
 
 /* ─── FORMSPREE SUGGEST ─── */
 function submitSuggest() {
