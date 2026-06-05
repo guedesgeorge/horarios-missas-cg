@@ -1849,7 +1849,7 @@ setInterval(function(){ render(); updateClock(); },30000);
 <!-- ════ CARLO — ASSISTENTE VIRTUAL ════ -->
 <style>
 .carlo-btn {
-  position:fixed; bottom:1.6rem; right:1.4rem; z-index:300;
+  position:fixed; bottom:calc(2rem + env(safe-area-inset-bottom, 0px)); right:1.4rem; z-index:300;
   width:60px; height:60px; border-radius:50%;
   border:3px solid var(--gold); background:var(--navy-dark);
   cursor:pointer; padding:0; overflow:visible;
@@ -1876,7 +1876,7 @@ setInterval(function(){ render(); updateClock(); },30000);
 }
 
 .carlo-win {
-  position:fixed; bottom:5.8rem; right:1.4rem; z-index:299;
+  position:fixed; bottom:calc(6.2rem + env(safe-area-inset-bottom, 0px)); right:1.4rem; z-index:299;
   width:340px; max-width:calc(100vw - 2rem);
   background:var(--ivory); border-radius:var(--r);
   box-shadow:var(--sh-lg); border:1px solid var(--ivory-dim);
@@ -1928,8 +1928,9 @@ setInterval(function(){ render(); updateClock(); },30000);
   background:var(--navy); display:flex; align-items:center; justify-content:center;
   font-size:.62rem; font-family:'Cinzel',serif; color:var(--gold); font-weight:700;
 }
+.cmsg-b a { color:#fff; text-decoration:underline; }
 .cmsg-b {
-  max-width:82%; padding:.52rem .78rem;
+  max-width:82%; padding:.52rem .78rem; word-break:break-word;
   border-radius:12px 12px 12px 2px;
   font-size:.77rem; line-height:1.65; color:var(--text);
   background:var(--ivory-dim);
@@ -2057,7 +2058,7 @@ var C_QA = [
       'O Sacramento da Reconciliação é o abraço do Pai ao filho pródigo que retorna. Não há pecado que Deus não possa perdoar a quem se arrepende com sinceridade.<br><br>' +
       '<em>"O Senhor não se cansa de perdoar. Somos nós que nos cansamos de pedir perdão."</em> — Papa Francisco<br><br>' +
       'Para encontrar horários de confissão nas paróquias de Campo Grande, acesse o <strong>Misericórdia CG</strong> — um localizador em tempo real de confissões na nossa cidade:<br><br>' +
-      '<a href="https://miseric-rdia-cg-production.up.railway.app/" target="_blank" style="display:inline-block;margin-top:.3rem;padding:.45rem 1rem;background:var(--navy);color:var(--ivory);border-radius:6px;text-decoration:none;font-size:.8rem;font-weight:600">🕊 Abrir Misericórdia CG</a><br><br>' +
+      '<a href="https://miseric-rdia-cg-production.up.railway.app/" target="_blank" rel="noopener noreferrer" style="display:inline-block;margin-top:.3rem;padding:.45rem 1rem;background:var(--navy);color:var(--ivory);border-radius:6px;text-decoration:none;font-size:.8rem;font-weight:600">🕊 Abrir Misericórdia CG</a><br><br>' +
       'Lá você encontra quais paróquias estão com confissão aberta agora, o endereço e como chegar. 🙏';
   }},
 
